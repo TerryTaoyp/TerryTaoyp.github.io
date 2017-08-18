@@ -2,9 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://yoursite.com/categories/index.html</loc>
+    
+    <lastmod>2017-08-18T07:01:42.607Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/2017/08/18/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/</loc>
+    
+    <lastmod>2017-08-18T07:00:46.387Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/2017/08/18/hello-world/</loc>
+    
+    <lastmod>2017-08-18T06:59:10.326Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/tags/index.html</loc>
+    
+    <lastmod>2017-08-18T06:21:36.769Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://yoursite.com/about/index.html</loc>
     
-    <lastmod>2017-08-18T04:11:03.655Z</lastmod>
+    <lastmod>2017-08-18T05:58:12.439Z</lastmod>
     
   </url>
   
@@ -12,34 +40,6 @@
     <loc>http://yoursite.com/commonweal/index.html</loc>
     
     <lastmod>2017-08-18T04:03:50.668Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://yoursite.com/categories/index.html</loc>
-    
-    <lastmod>2017-08-18T02:54:13.137Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://yoursite.com/tags/index.html</loc>
-    
-    <lastmod>2017-08-17T18:54:24.375Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://yoursite.com/2017/08/18/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/</loc>
-    
-    <lastmod>2017-08-17T18:34:38.669Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://yoursite.com/2017/08/17/hello-world/</loc>
-    
-    <lastmod>2017-08-17T14:22:21.406Z</lastmod>
     
   </url>
   
