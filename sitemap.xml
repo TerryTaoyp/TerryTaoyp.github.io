@@ -2,20 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://yoursite.com/2017/09/22/%E9%98%BF%E9%91%AB%E5%82%BB%E9%80%BC/</loc>
-    
-    <lastmod>2017-09-22T09:45:43.399Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://yoursite.com/2017/09/22/hexo%E6%95%99%E7%A8%8B/</loc>
-    
-    <lastmod>2017-09-22T09:44:19.060Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://yoursite.com/about/index.html</loc>
     
     <lastmod>2017-08-19T06:53:46.725Z</lastmod>

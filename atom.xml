@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2017-09-22T09:45:43.399Z</updated>
+  <updated>2017-08-18T15:00:25.383Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -14,44 +14,6 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title>阿鑫傻逼</title>
-    <link href="http://yoursite.com/2017/09/22/%E9%98%BF%E9%91%AB%E5%82%BB%E9%80%BC/"/>
-    <id>http://yoursite.com/2017/09/22/阿鑫傻逼/</id>
-    <published>2017-09-22T09:45:15.000Z</published>
-    <updated>2017-09-22T09:45:43.399Z</updated>
-    
-    <summary type="html">
-    
-    </summary>
-    
-    
-      <category term="生活小记" scheme="http://yoursite.com/tags/%E7%94%9F%E6%B4%BB%E5%B0%8F%E8%AE%B0/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>hexo教程</title>
-    <link href="http://yoursite.com/2017/09/22/hexo%E6%95%99%E7%A8%8B/"/>
-    <id>http://yoursite.com/2017/09/22/hexo教程/</id>
-    <published>2017-09-22T09:01:12.000Z</published>
-    <updated>2017-09-22T09:44:19.060Z</updated>
-    
-    <content type="html"><![CDATA[<p></p><h2>这是一个标题</h2><br><br>1、这是第一行<br><br>2、这是第二行<p></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;&lt;/p&gt;&lt;h2&gt;这是一个标题&lt;/h2&gt;&lt;br&gt;&lt;br&gt;1、这是第一行&lt;br&gt;&lt;br&gt;2、这是第二行&lt;p&gt;&lt;/p&gt;
-
-    
-    </summary>
-    
-    
-      <category term="技术文章" scheme="http://yoursite.com/tags/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/"/>
-    
-  </entry>
   
   <entry>
     <title>入驻新家</title>
