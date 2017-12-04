@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2017-12-03T11:11:41.752Z</updated>
+  <updated>2017-12-04T10:54:52.820Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -14,6 +14,28 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>畅谈类加载的过程</title>
+    <link href="http://yoursite.com/2017/12/04/java001/"/>
+    <id>http://yoursite.com/2017/12/04/java001/</id>
+    <published>2017-12-03T16:00:00.000Z</published>
+    <updated>2017-12-04T10:54:52.820Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="类加载"><a href="#类加载" class="headerlink" title="类加载"></a>类加载</h3>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;类加载&quot;&gt;&lt;a href=&quot;#类加载&quot; class=&quot;headerlink&quot; title=&quot;类加载&quot;&gt;&lt;/a&gt;类加载&lt;/h3&gt;
+    
+    </summary>
+    
+      <category term="Java" scheme="http://yoursite.com/categories/Java/"/>
+    
+    
+      <category term="java基础" scheme="http://yoursite.com/tags/java%E5%9F%BA%E7%A1%80/"/>
+    
+  </entry>
   
   <entry>
     <title>新的开始</title>
@@ -51,22 +73,60 @@
     <link href="http://yoursite.com/2017/12/03/%E4%B8%80%E4%B8%AAHelloWorld%E5%BC%95%E5%8F%91%E7%9A%84%E6%80%9D%E8%80%83/"/>
     <id>http://yoursite.com/2017/12/03/一个HelloWorld引发的思考/</id>
     <published>2017-12-02T16:00:00.000Z</published>
-    <updated>2017-12-03T14:56:09.592Z</updated>
+    <updated>2017-12-04T10:56:22.831Z</updated>
     
     <content type="html"><![CDATA[<h2 id="一、手写源程序"><a href="#一、手写源程序" class="headerlink" title="一、手写源程序"></a>一、手写源程序</h2><p>&emsp;&emsp;我们打开任何一本Java学习的书籍，都会告诉我们用记事本或者其他的文本编辑器写一个简单的小程序，然后javac 类名，进行编译，会在同一文件下生成一个同名的.calss文件；我们这里先怒写一个HelloWorld.java，代码如下：</p>
 <a id="more"></a>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">public class HelloWorld &#123;</div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        System.out.println(&quot;Hello World!&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>.class文件反序列化，代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">package com.tao.study.one;</div><div class="line"></div><div class="line">public class HelloWorld &#123;</div><div class="line">    public HelloWorld() &#123;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void main(String[] args) &#123;</div><div class="line">        System.out.println(&quot;Hello World!&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>我们用cmd命令打开我们编译后的.class文件，cmd的命令为:javap -v 类名，HelloWorld.class的内部代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div></pre></td><td class="code"><pre><div class="line">Classfile /E:/DataBase/Idea/JavaStudy/out/production/JavaStudy/com/tao/study/one/HelloWorld.class</div><div class="line">  Last modified 2017-12-3; size 570 bytes</div><div class="line">  MD5 checksum e34e8917fa1c76751b4ea9a2f491d17a</div><div class="line">  Compiled from &quot;HelloWorld.java&quot;</div><div class="line">public class com.tao.study.one.HelloWorld</div><div class="line">  minor version: 0   //副版本号</div><div class="line">  major version: 52  //编译器版本号 == jdk1.8</div><div class="line">  flags: ACC_PUBLIC, ACC_SUPER</div><div class="line">//常量池</div><div class="line">Constant pool:</div><div class="line">   #1 = Methodref          #6.#20         // java/lang/Object.&quot;&lt;init&gt;&quot;:()V</div><div class="line">   #2 = Fieldref           #21.#22        // java/lang/System.out:Ljava/io/PrintStream;</div><div class="line">   #3 = String             #23            // Hello World!</div><div class="line">   #4 = Methodref          #24.#25        // java/io/PrintStream.println:(Ljava/lang/String;)V</div><div class="line">   #5 = Class              #26            // com/tao/study/one/HelloWorld</div><div class="line">   #6 = Class              #27            // java/lang/Object</div><div class="line">   #7 = Utf8               &lt;init&gt;</div><div class="line">   #8 = Utf8               ()V</div><div class="line">   #9 = Utf8               Code</div><div class="line">  #10 = Utf8               LineNumberTable</div><div class="line">  #11 = Utf8               LocalVariableTable</div><div class="line">  #12 = Utf8               this</div><div class="line">  #13 = Utf8               Lcom/tao/study/one/HelloWorld;</div><div class="line">  #14 = Utf8               main</div><div class="line">  #15 = Utf8               ([Ljava/lang/String;)V</div><div class="line">  #16 = Utf8               args</div><div class="line">  #17 = Utf8               [Ljava/lang/String;</div><div class="line">  #18 = Utf8               SourceFile</div><div class="line">  #19 = Utf8               HelloWorld.java</div><div class="line">  #20 = NameAndType        #7:#8          // &quot;&lt;init&gt;&quot;:()V</div><div class="line">  #21 = Class              #28            // java/lang/System</div><div class="line">  #22 = NameAndType        #29:#30        // out:Ljava/io/PrintStream;</div><div class="line">  #23 = Utf8               Hello World!</div><div class="line">  #24 = Class              #31            // java/io/PrintStream</div><div class="line">  #25 = NameAndType        #32:#33        // println:(Ljava/lang/String;)V</div><div class="line">  #26 = Utf8               com/tao/study/one/HelloWorld</div><div class="line">  #27 = Utf8               java/lang/Object</div><div class="line">  #28 = Utf8               java/lang/System</div><div class="line">  #29 = Utf8               out</div><div class="line">  #30 = Utf8               Ljava/io/PrintStream;</div><div class="line">  #31 = Utf8               java/io/PrintStream</div><div class="line">  #32 = Utf8               println</div><div class="line">  #33 = Utf8               (Ljava/lang/String;)V</div><div class="line">&#123;</div><div class="line">  public com.tao.study.one.HelloWorld();</div><div class="line">    descriptor: ()V</div><div class="line">    flags: ACC_PUBLIC</div><div class="line">    Code:</div><div class="line">      stack=1, locals=1, args_size=1</div><div class="line">         0: aload_0</div><div class="line">         1: invokespecial #1                  // Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</div><div class="line">         4: return</div><div class="line">      LineNumberTable:</div><div class="line">        line 6: 0</div><div class="line">      LocalVariableTable:</div><div class="line">        Start  Length  Slot  Name   Signature</div><div class="line">            0       5     0  this   Lcom/tao/study/one/HelloWorld;</div><div class="line"></div><div class="line">  public static void main(java.lang.String[]);</div><div class="line">    descriptor: ([Ljava/lang/String;)V</div><div class="line">    flags: ACC_PUBLIC, ACC_STATIC</div><div class="line">    Code:</div><div class="line">      stack=2, locals=1, args_size=1</div><div class="line">         0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;</div><div class="line">         3: ldc           #3                  // String Hello World!</div><div class="line">         5: invokevirtual #4                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V</div><div class="line">         8: return</div><div class="line">      LineNumberTable:</div><div class="line">        line 8: 0</div><div class="line">        line 9: 8</div><div class="line">      LocalVariableTable:</div><div class="line">        Start  Length  Slot  Name   Signature</div><div class="line">            0       9     0  args   [Ljava/lang/String;</div><div class="line">&#125;</div><div class="line">SourceFile: &quot;HelloWorld.java&quot;</div></pre></td></tr></table></figure></p>
 <h2 id="二、提出疑问"><a href="#二、提出疑问" class="headerlink" title="二、提出疑问"></a>二、提出疑问</h2><p>&emsp;&emsp;看到上面的结果，我们的第一感觉肯定是，woc，怎么这么神奇，这里面都发生了什么呢？那我们就要带着这些疑问去探究他们了，在百度上一顿操作之后，我们知道了javac是java自带的编译器，将java语言规范转化成JVM能够识别的字节码文件(.class文件)；这是就更加懵了，甚至有点想跳过，一个过来人告诉你，不要这样子哦。下面我们来 总结一下这里面的问题，然后去探究一下java的世界到底是一个怎样的存在。</p>
 <h3 id="问题有："><a href="#问题有：" class="headerlink" title="问题有："></a>问题有：</h3><p>1、 什么是javac编译器？它又有什么作用？它又是怎样工作的呢？<br>2、 为什么要把字节码文件加载到JVM中呢？字节码文件又是如何加载到JVM中的？<br>3、 JVM是什么？它是如何工作的呢？</p>
-<p>&emsp;&emsp;看到这些疑问你是不是有点兴奋了，原来java可以学习的东西有这么多的啊，那我们就开始我们的探索之旅吧。问题要一个个的解决，我们就按顺序进行研究吧！</p>
-<h4 id="编译原理"><a href="#编译原理" class="headerlink" title="编译原理"></a>编译原理</h4><p>1.1 &emsp;javac是java语言自带的一种编译器，我们都知道java有自己的语言规范，写错了一小处代码，整个项目都会无法运行，这就是规范的魅力，无规矩不成方圆，代码世界中同样如此，每一门语言都是一个王国，我们都是它的臣民；但是java语言不是机器语言，我们的 机器是无法识别的，于是我们的java国王大手一挥创建了外交部，让javac负责这个部门，让它负责对外交流，但是javac这个小伙发现一个人的力量是有限的，要充分发挥自己的部长身份，于是他找到自己的得力干将JVM，让他负责与机器王国进行交流；每当国王发布新的命令的时候(.java文件)，javac就将其编译成字节码文件，然后直接丢给自己的小弟JVM，自己只负责与国王(java类)对话交流；</p>
-<p>1.2 &emsp;我们的javac部长又是如何工作的呢？咱们明天再讲，一会有点事情，要去接受大佬的蹂躏；</p>
+<h2 id="三、解决疑问"><a href="#三、解决疑问" class="headerlink" title="三、解决疑问"></a>三、解决疑问</h2><p>&emsp;&emsp;看到这些疑问你是不是有点兴奋了，原来java可以学习的东西有这么多的啊，那我们就开始我们的探索之旅吧。问题要一个个的解决，我们就按顺序进行研究吧！</p>
+<h4 id="编译原理"><a href="#编译原理" class="headerlink" title="编译原理"></a>编译原理</h4><p>1.1 &emsp;javac是java语言自带的一种编译器，我们都知道java有自己的语言规范，写错了一小处代码，整个项目都会无法运行，这就是规范的魅力，无规矩不成方圆，代码世界中同样如此，每一门语言都是一个王国，我们都是它的臣民；但是java语言不是机器语言，我们的机器是无法识别的，于是我们的java国王大手一挥创建了外交部，让javac负责这个部门，让它负责对外交流，但是javac这个小伙发现一个人的力量是有限的，要充分发挥自己的部长身份，于是他找到自己的得力干将JVM，让他负责与机器王国进行交流；每当国王发布新的命令的时候(.java文件)，javac就将其编译成字节码文件，然后直接丢给自己的小弟JVM，自己只负责与国王(java类)对话交流；</p>
+<p>1.2 &emsp;Java的编译环节分为四个步骤，绝大部分的编译器也是这样设计的，四个步骤依次为：</p>
+<ul>
+<li>词法解析</li>
+<li>语法解析</li>
+<li>语义解析</li>
+<li>生成字节码<br>&emsp;&emsp;编译器的功能就是将java代码翻译成JVM规范下的字节码文件，最重要的点是符合jvm规范，我们的翻译过程也主要是围绕着从一个规范到另一个规范的过程展开；<br>1.2.1 &emsp;词法解析：<br>词法解析的作用就是生成符合java语法规范的Token序列；<blockquote>
+<p><code>注释：</code>Token序列就是一组对应源码字符集合的单词序列，其实上就是一个枚举类型，内部定义了许多符合java语法规范并与源码字符集合相对应的枚举常量；</p>
+</blockquote>
+</li>
+</ul>
+<p>&emsp;&emsp;这时我们肯定会非常好奇，java源码是如何转换成Token序列的呢？java的源码又是如何和已经生成的Token序列保持一个长久的对应关系呢？<br>&emsp;&emsp;词法解析器在将源码翻译成Token序列之前，会先把这个源码字符集合转化为一个Name对象，每一个源码字符集合都是一个Name对象；Keywsords这个类(这里可以把它理解为一个工具类，名字不重要)会把所有的枚举常量转换为一个Name对象，然后将其存储在Name对象的内部类Table中，这时候Name对象就与Token序列建立了一个映射关系；每当我们传进来一个源码字符集合的Name对象的时候，词法解析器就会先找到Name类的内部类Table，在里面获取到对应的Token对象后，将源码字符集合与对应的Token对象的关系存储在Keywords类的Token key[]数组中；我们可以用一张图来表示这个过程，如下：<br><img src="/images/cifafenxi.png" alt=""></p>
+<p>1.2.2 &emsp;语法解析：<br>语法解析的作用就是把匹配得到的Token序列整合成一个语法树；</p>
+<p>1.2.3 &emsp;语义分析：<br>语义分析就是将语法分析产生的语法树进一步完善，例如给类 添加的默认构造函数，检查变量在使用前是否初始化，将一些常量进行合并处理，检查操作变量类型是否匹配，检查所有的操作语句是否可达，检查异常是否已经捕获或者抛出，解除java语法糖，等。</p>
+<p>1.2.4 &emsp;生成字节码：<br>遍历语法树，生成最终的字节码。</p>
+<h4 id="Java虚拟机-JVM"><a href="#Java虚拟机-JVM" class="headerlink" title="Java虚拟机(JVM)"></a>Java虚拟机(JVM)</h4><p>1、大家都知道Java是一门可以跨平台的语言，就是因为java源代码的编译结果字节码文件，而字节码文件是在JVM上面运行的，JVM是java技术的真正核心，俗话说得好，一个人对java理解的深度取决于他对JVM的理解深度，由此可以看出，JVM是我们的重中之重；<br>2、字节码文件加载到JVM中又是经历了一个怎样的过程呢，那我们就读一下下面的这一篇文章吧！<br><b><a href="/java001.md">畅谈类加载的过程</a></b></p>
+<p>3、java王国的国王想知道JVM这个小伙是怎么做的这么优秀的，谁先彻底研究清除，重重有赏，无数谋士纷纷前往，但又有几个真的了解了这个城府如此之深的小伙呢；但我们不能放弃，下面就让我们一起去剖析一下JVM到底是一个什么东西，他是如何做到外交部长交给他的任务的：<br><b><a href="/java002.md">绑架JVM</a></b></p>
 ]]></content>
     
     <summary type="html">
     
       &lt;h2 id=&quot;一、手写源程序&quot;&gt;&lt;a href=&quot;#一、手写源程序&quot; class=&quot;headerlink&quot; title=&quot;一、手写源程序&quot;&gt;&lt;/a&gt;一、手写源程序&lt;/h2&gt;&lt;p&gt;&amp;emsp;&amp;emsp;我们打开任何一本Java学习的书籍，都会告诉我们用记事本或者其他的文本编辑器写一个简单的小程序，然后javac 类名，进行编译，会在同一文件下生成一个同名的.calss文件；我们这里先怒写一个HelloWorld.java，代码如下：&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Java" scheme="http://yoursite.com/categories/Java/"/>
+    
+    
+      <category term="java基础" scheme="http://yoursite.com/tags/java%E5%9F%BA%E7%A1%80/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>绑架JVM</title>
+    <link href="http://yoursite.com/2017/12/03/java002/"/>
+    <id>http://yoursite.com/2017/12/03/java002/</id>
+    <published>2017-12-02T16:00:00.000Z</published>
+    <updated>2017-12-04T10:57:16.934Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="绑架JVM"><a href="#绑架JVM" class="headerlink" title="绑架JVM"></a>绑架JVM</h3>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;绑架JVM&quot;&gt;&lt;a href=&quot;#绑架JVM&quot; class=&quot;headerlink&quot; title=&quot;绑架JVM&quot;&gt;&lt;/a&gt;绑架JVM&lt;/h3&gt;
     
     </summary>
     
