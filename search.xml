@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[震惊！Mysql索引竟然可以提高查找效率]]></title>
+    <url>%2F2017%2F12%2F05%2Fsql001%2F</url>
+    <content type="text"><![CDATA[大学生眼中的网站 我也是个大三的学生，绝对没有贬低的意思。 &emsp;&emsp;当我们知道我们被计算机学院录取的时候，我们都怀着好奇与忐忑的心情，开始了我们的大学；好奇的是：我们平常生活中使用的这些网站和APP都是怎么做出来的呢，我以后也是干这个的吗；忐忑的是：wco我平时就会打游戏和看视频，那些玩意我能学会吗，好起来逼格都好高啊。当我们刚开始接触代码时候的那种油然而生的装逼之心 ，忍不住发了个说说，告诉身边的人，我也是电视里那种用代码的人了；经过了一年的沉浮，我们大部分人都已经是开发小能手了，我们可以各种徒手做网站、APP，内心充满了雄心壮志，但是我们的网站的效率是怎样的的呢，有没有数据过万，加载速度就明显降低呢，我们应该怎么去提高我们的查询效率呢？缓存还是索引，这是一个问题。&emsp;&emsp;使用缓存是一种方法，现在比较火的有Redis和Memcached,但是当处理一些动态数据的时候，我们的缓存方法肯定会出现问题，我会在另一篇博客中重点讲解一下；本篇主要是用的是数据库索引； 随机生成一百万数据&emsp;&emsp;我们使用数据库索引是为了处理大数据问题的，可是我们 没有数据啊，这可真是难倒了一堆好汉；但是大哥们，我们要注意的时候，计算机多少数据不可以自动生成，他可是我们的傻兄弟啊，那咱们就来教一下这个傻傻的小兄弟，先生成个一百万的数据： 创建一个简单的用户表123456CREATE TABLE `t_user_memory` ( `id` INT (11) NOT NULL AUTO_INCREMENT, `username` VARCHAR(50) NOT NULL DDEFAULT &apos;&apos;, `password` VARCHAR(50) NOT NULL DDEFAULT &apos;&apos;, PRIMARY KEY (`id`), ) ENGINE = MEMORY AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8 依次执行下面的操作：1、随机产生长度为n的字符串的函数：1234567891011CREATE FUNCTION `rand_str`(n INT) RETURNS varchar(255) CHARSET latin1 BEGIN DECLARE chars_str varchar(100) DEFAULT &apos;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&apos;; DECLARE return_str varchar(255) DEFAULT &apos;&apos; ; DECLARE i INT DEFAULT 0; WHILE i &lt; n DO SET return_str = concat(return_str,substring(chars_str , FLOOR(1 + RAND()*62 ),1)); SET i = i +1; END WHILE; RETURN return_str; END 2、向数据库中添加n条数据的函数：12345678CREATE PROCEDURE `add_user`(IN n int) BEGIN DECLARE i INT DEFAULT 1; WHILE (i &lt;= n ) DO INSERT into t_user_memory (username,password) VALUES (rand_str(20),rand_str(20)); set i=i+1; END WHILE; END 3、调用插入函数,并插入一百万的数据：1CALL add_user(1000000) 依次执行完上面的步骤之后，大概等个四十来分钟（根据计算机的性能），我们可以来看一下效果，如下图： 简单暴力，一百万数据添加完毕 ，我们可以根据自己的需要改变插入条数的大小； 创建数据库索引普通索引 这是最基本的索引类型，而且它没有唯一性之类的限制; 1、创建1CREATE INDEX indexId ON t_user_memory(id) 创建成功： 2、索引的删除1DROP INDEX indexId ON t_user_memory 删除成功： 唯一性索引 这种索引和前面的“普通索引”基本相同，但有一个区别：索引列的所有值都只能出现一次，即必须唯一。 1、创建1CREATE UNIQUE INDEX indexId ON t_user_memory(id); 创建成功：2、删除和普通索引一样1DROP INDEX indexId ON t_user_memory 主键索引 它是一种特殊的唯一索引，不允许有空值。一般是在建表的时候同时创建主键索引，也就是我们的主键。 单列索引&amp;组合索引单列索引 依然使用上面的例子，当我们查找一个username = “Taoyongpan”的用户的时候，我们查处了10条，但是每条的密码不一样，我们查询的时候很快的查出 这十条数据，把这十条数据放到一个中间结果集上面，然后再对比密码一一排除，我们在密码上加索引也是同样的原理； 组合索引 当我们把username和password放到一个索引里面的时候就会直接查找到我们所需要的那一条数据，当数据量非常大的时候，会大大提高我们的查找速度，这就是组合索引； 1、创建1ALTER TABLE t_user_memory ADD INDEX indexUser (username,password) 创建成功： 2、删除操作同上 数据库索引的利与弊利1、建立索引的列可以保证行的唯一性，生成唯一的rowId2、建立索引可以有效缩短数据的检索时间3、建立索引可以加快表与表之间的连接4、为用来排序或者是分组的字段添加索引可以加快分组和排序顺序 弊1、创建索引和维护索引需要时间成本，这个成本随着数据量的增加而加大2、创建索引和维护索引需要空间成本，每一条索引都要占据数据库的物理存储空间，数据量越大，占用空间也越大（数据表占据的是数据库的数据空间）3、虽然索引大大提高了查询速度，同时却会降低更新表的速度，如对表进行INSERT、UPDATE和DELETE。因为更新表时，MySQL不仅要保存数据，还要保存一下索引文件。 下篇预告 下一篇我们一起来学习一下，索引的原理是怎么的，为什么可以提高查询效率呢，等问题，我们下一篇再见。]]></content>
+      <categories>
+        <category>Sql</category>
+      </categories>
+      <tags>
+        <tag>Mysql</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[畅谈类加载的过程]]></title>
     <url>%2F2017%2F12%2F04%2Fjava001%2F</url>
     <content type="text"><![CDATA[类加载]]></content>
