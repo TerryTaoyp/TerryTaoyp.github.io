@@ -1,69 +1,201 @@
 <?xml version="1.0" encoding="utf-8"?>
-<search>
-  <entry>
-    <title><![CDATA[Mysql索引实现原理]]></title>
-    <url>%2F2017%2F12%2F08%2Fsql002%2F</url>
-    <content type="text"></content>
-      <categories>
-        <category>Sql</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[Mysql索引基本操作详解]]></title>
-    <url>%2F2017%2F12%2F05%2Fsql001%2F</url>
-    <content type="text"><![CDATA[大学生眼中的网站 我也是个大三的学生，绝对没有贬低的意思。 &emsp;&emsp;当我们知道自己被计算机学院录取的时候，我们都怀着好奇与忐忑的心情，开始了我们的大学；好奇的是：我们平常生活中使用的这些网站和APP都是怎么做出来的呢，我以后也是干这个的吗；忐忑的是：wco我平时就会打游戏和看视频，那些玩意我能学会吗，好起来逼格都好高啊。当我们刚开始接触代码时候的那种油然而生的装逼之心 ，忍不住发了个说说，告诉身边的人，我也是电视里那种用代码的人了；经过了一年的沉浮，我们大部分人都已经是开发小能手了，我们可以各种徒手做网站、APP，内心充满了雄心壮志，但是我们的网站的效率是怎样的的呢，有没有数据过万，加载速度就明显降低呢，我们应该怎么去提高我们的查询效率呢？缓存还是索引，这是一个问题。&emsp;&emsp;使用缓存是一种方法，现在比较火的有Redis和Memcached,但是当处理一些动态数据的时候，我们的缓存方法肯定会出现问题，我会在另一篇博客中重点讲解一下；本篇主要是用的是数据库索引； 随机生成一百万数据&emsp;&emsp;我们使用数据库索引是为了处理大数据问题的，可是我们 没有数据啊，这可真是难倒了一堆好汉；但是大哥们，我们要注意的时候，计算机多少数据不可以自动生成，他可是我们的傻兄弟啊，那咱们就来教一下这个傻傻的小兄弟，先生成个一百万的数据： 创建一个简单的用户表123456CREATE TABLE `t_user_memory` ( `id` INT (11) NOT NULL AUTO_INCREMENT, `username` VARCHAR(50) NOT NULL DDEFAULT &apos;&apos;, `password` VARCHAR(50) NOT NULL DDEFAULT &apos;&apos;, PRIMARY KEY (`id`), ) ENGINE = MEMORY AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8 依次执行下面的操作：1、随机产生长度为n的字符串的函数：1234567891011CREATE FUNCTION `rand_str`(n INT) RETURNS varchar(255) CHARSET latin1 BEGIN DECLARE chars_str varchar(100) DEFAULT &apos;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&apos;; DECLARE return_str varchar(255) DEFAULT &apos;&apos; ; DECLARE i INT DEFAULT 0; WHILE i &lt; n DO SET return_str = concat(return_str,substring(chars_str , FLOOR(1 + RAND()*62 ),1)); SET i = i +1; END WHILE; RETURN return_str; END 2、向数据库中添加n条数据的函数：12345678CREATE PROCEDURE `add_user`(IN n int) BEGIN DECLARE i INT DEFAULT 1; WHILE (i &lt;= n ) DO INSERT into t_user_memory (username,password) VALUES (rand_str(20),rand_str(20)); set i=i+1; END WHILE; END 3、调用插入函数,并插入一百万的数据：1CALL add_user(1000000) 依次执行完上面的步骤之后，大概等个四十来分钟（根据计算机的性能），我们可以来看一下效果，如下图： 简单暴力，一百万数据添加完毕 ，我们可以根据自己的需要改变插入条数的大小； 创建数据库索引普通索引 这是最基本的索引类型，而且它没有唯一性之类的限制; 1、创建1CREATE INDEX indexId ON t_user_memory(id) 创建成功： 2、索引的删除1DROP INDEX indexId ON t_user_memory 删除成功： 唯一性索引 这种索引和前面的“普通索引”基本相同，但有一个区别：索引列的所有值都只能出现一次，即必须唯一。 1、创建1CREATE UNIQUE INDEX indexId ON t_user_memory(id); 创建成功：2、删除和普通索引一样1DROP INDEX indexId ON t_user_memory 主键索引 它是一种特殊的唯一索引，不允许有空值。一般是在建表的时候同时创建主键索引，也就是我们的主键。 单列索引&amp;组合索引单列索引 依然使用上面的例子，当我们查找一个username = “Taoyongpan”的用户的时候，我们查处了10条，但是每条的密码不一样，我们查询的时候很快的查出 这十条数据，把这十条数据放到一个中间结果集上面，然后再对比密码一一排除，我们在密码上加索引也是同样的原理； 组合索引 当我们把username和password放到一个索引里面的时候就会直接查找到我们所需要的那一条数据，当数据量非常大的时候，会大大提高我们的查找速度，这就是组合索引； 1、创建1ALTER TABLE t_user_memory ADD INDEX indexUser (username,password) 创建成功： 2、删除操作同上 数据库索引的利与弊利1、建立索引的列可以保证行的唯一性，生成唯一的rowId2、建立索引可以有效缩短数据的检索时间3、建立索引可以加快表与表之间的连接4、为用来排序或者是分组的字段添加索引可以加快分组和排序顺序 弊1、创建索引和维护索引需要时间成本，这个成本随着数据量的增加而加大2、创建索引和维护索引需要空间成本，每一条索引都要占据数据库的物理存储空间，数据量越大，占用空间也越大（数据表占据的是数据库的数据空间）3、虽然索引大大提高了查询速度，同时却会降低更新表的速度，如对表进行INSERT、UPDATE和DELETE。因为更新表时，MySQL不仅要保存数据，还要保存一下索引文件。 下篇预告 下一篇我们一起来学习一下，索引的原理是怎么的，为什么可以提高查询效率呢，等问题，我们下一篇再见。]]></content>
-      <categories>
-        <category>Sql</category>
-      </categories>
-      <tags>
-        <tag>Mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[绑架JVM]]></title>
-    <url>%2F2017%2F12%2F05%2Fjava002%2F</url>
-    <content type="text"><![CDATA[绑架JVM]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>java基础</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[畅谈类加载的过程]]></title>
-    <url>%2F2017%2F12%2F04%2Fjava001%2F</url>
-    <content type="text"><![CDATA[类加载]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>java基础</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[HelloWorld引发的思考]]></title>
-    <url>%2F2017%2F12%2F03%2F%E4%B8%80%E4%B8%AAHelloWorld%E5%BC%95%E5%8F%91%E7%9A%84%E6%80%9D%E8%80%83%2F</url>
-    <content type="text"><![CDATA[一、手写源程序&emsp;&emsp;我们打开任何一本Java学习的书籍，都会告诉我们用记事本或者其他的文本编辑器写一个简单的小程序，然后javac 类名，进行编译，会在同一文件下生成一个同名的.calss文件；我们这里先怒写一个HelloWorld.java，代码如下： 12345public class HelloWorld &#123; public static void main(String[] args)&#123; System.out.println(&quot;Hello World!&quot;); &#125;&#125; .class文件反序列化，代码如下：12345678910package com.tao.study.one;public class HelloWorld &#123; public HelloWorld() &#123; &#125; public static void main(String[] args) &#123; System.out.println(&quot;Hello World!&quot;); &#125;&#125; 我们用cmd命令打开我们编译后的.class文件，cmd的命令为:javap -v 类名，HelloWorld.class的内部代码如下：123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475Classfile /E:/DataBase/Idea/JavaStudy/out/production/JavaStudy/com/tao/study/one/HelloWorld.class Last modified 2017-12-3; size 570 bytes MD5 checksum e34e8917fa1c76751b4ea9a2f491d17a Compiled from &quot;HelloWorld.java&quot;public class com.tao.study.one.HelloWorld minor version: 0 //副版本号 major version: 52 //编译器版本号 == jdk1.8 flags: ACC_PUBLIC, ACC_SUPER//常量池Constant pool: #1 = Methodref #6.#20 // java/lang/Object.&quot;&lt;init&gt;&quot;:()V #2 = Fieldref #21.#22 // java/lang/System.out:Ljava/io/PrintStream; #3 = String #23 // Hello World! #4 = Methodref #24.#25 // java/io/PrintStream.println:(Ljava/lang/String;)V #5 = Class #26 // com/tao/study/one/HelloWorld #6 = Class #27 // java/lang/Object #7 = Utf8 &lt;init&gt; #8 = Utf8 ()V #9 = Utf8 Code #10 = Utf8 LineNumberTable #11 = Utf8 LocalVariableTable #12 = Utf8 this #13 = Utf8 Lcom/tao/study/one/HelloWorld; #14 = Utf8 main #15 = Utf8 ([Ljava/lang/String;)V #16 = Utf8 args #17 = Utf8 [Ljava/lang/String; #18 = Utf8 SourceFile #19 = Utf8 HelloWorld.java #20 = NameAndType #7:#8 // &quot;&lt;init&gt;&quot;:()V #21 = Class #28 // java/lang/System #22 = NameAndType #29:#30 // out:Ljava/io/PrintStream; #23 = Utf8 Hello World! #24 = Class #31 // java/io/PrintStream #25 = NameAndType #32:#33 // println:(Ljava/lang/String;)V #26 = Utf8 com/tao/study/one/HelloWorld #27 = Utf8 java/lang/Object #28 = Utf8 java/lang/System #29 = Utf8 out #30 = Utf8 Ljava/io/PrintStream; #31 = Utf8 java/io/PrintStream #32 = Utf8 println #33 = Utf8 (Ljava/lang/String;)V&#123; public com.tao.study.one.HelloWorld(); descriptor: ()V flags: ACC_PUBLIC Code: stack=1, locals=1, args_size=1 0: aload_0 1: invokespecial #1 // Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V 4: return LineNumberTable: line 6: 0 LocalVariableTable: Start Length Slot Name Signature 0 5 0 this Lcom/tao/study/one/HelloWorld; public static void main(java.lang.String[]); descriptor: ([Ljava/lang/String;)V flags: ACC_PUBLIC, ACC_STATIC Code: stack=2, locals=1, args_size=1 0: getstatic #2 // Field java/lang/System.out:Ljava/io/PrintStream; 3: ldc #3 // String Hello World! 5: invokevirtual #4 // Method java/io/PrintStream.println:(Ljava/lang/String;)V 8: return LineNumberTable: line 8: 0 line 9: 8 LocalVariableTable: Start Length Slot Name Signature 0 9 0 args [Ljava/lang/String;&#125;SourceFile: &quot;HelloWorld.java&quot; 二、提出疑问&emsp;&emsp;看到上面的结果，我们的第一感觉肯定是，woc，怎么这么神奇，这里面都发生了什么呢？那我们就要带着这些疑问去探究他们了，在百度上一顿操作之后，我们知道了javac是java自带的编译器，将java语言规范转化成JVM能够识别的字节码文件(.class文件)；这是就更加懵了，甚至有点想跳过，一个过来人告诉你，不要这样子哦。下面我们来 总结一下这里面的问题，然后去探究一下java的世界到底是一个怎样的存在。 问题有：1、 什么是javac编译器？它又有什么作用？它又是怎样工作的呢？2、 为什么要把字节码文件加载到JVM中呢？字节码文件又是如何加载到JVM中的？3、 JVM是什么？它是如何工作的呢？ 三、解决疑问&emsp;&emsp;看到这些疑问你是不是有点兴奋了，原来java可以学习的东西有这么多的啊，那我们就开始我们的探索之旅吧。问题要一个个的解决，我们就按顺序进行研究吧！ 编译原理1.1 &emsp;javac是java语言自带的一种编译器，我们都知道java有自己的语言规范，写错了一小处代码，整个项目都会无法运行，这就是规范的魅力，无规矩不成方圆，代码世界中同样如此，每一门语言都是一个王国，我们都是它的臣民；但是java语言不是机器语言，我们的机器是无法识别的，于是我们的java国王大手一挥创建了外交部，让javac负责这个部门，让它负责对外交流，但是javac这个小伙发现一个人的力量是有限的，要充分发挥自己的部长身份，于是他找到自己的得力干将JVM，让他负责与机器王国进行交流；每当国王发布新的命令的时候(.java文件)，javac就将其编译成字节码文件，然后直接丢给自己的小弟JVM，自己只负责与国王(java类)对话交流； 1.2 &emsp;Java的编译环节分为四个步骤，绝大部分的编译器也是这样设计的，四个步骤依次为： 词法解析 语法解析 语义解析 生成字节码&emsp;&emsp;编译器的功能就是将java代码翻译成JVM规范下的字节码文件，最重要的点是符合jvm规范，我们的翻译过程也主要是围绕着从一个规范到另一个规范的过程展开；1.2.1 &emsp;词法解析：词法解析的作用就是生成符合java语法规范的Token序列； 注释：Token序列就是一组对应源码字符集合的单词序列，其实上就是一个枚举类型，内部定义了许多符合java语法规范并与源码字符集合相对应的枚举常量； &emsp;&emsp;这时我们肯定会非常好奇，java源码是如何转换成Token序列的呢？java的源码又是如何和已经生成的Token序列保持一个长久的对应关系呢？&emsp;&emsp;词法解析器在将源码翻译成Token序列之前，会先把这个源码字符集合转化为一个Name对象，每一个源码字符集合都是一个Name对象；Keywsords这个类(这里可以把它理解为一个工具类，名字不重要)会把所有的枚举常量转换为一个Name对象，然后将其存储在Name对象的内部类Table中，这时候Name对象就与Token序列建立了一个映射关系；每当我们传进来一个源码字符集合的Name对象的时候，词法解析器就会先找到Name类的内部类Table，在里面获取到对应的Token对象后，将源码字符集合与对应的Token对象的关系存储在Keywords类的Token key[]数组中；我们可以用一张图来表示这个过程，如下： 1.2.2 &emsp;语法解析：语法解析的作用就是把匹配得到的Token序列整合成一个语法树； 1.2.3 &emsp;语义分析：语义分析就是将语法分析产生的语法树进一步完善，例如给类 添加的默认构造函数，检查变量在使用前是否初始化，将一些常量进行合并处理，检查操作变量类型是否匹配，检查所有的操作语句是否可达，检查异常是否已经捕获或者抛出，解除java语法糖，等。 1.2.4 &emsp;生成字节码：遍历语法树，生成最终的字节码。 Java虚拟机(JVM)1、大家都知道Java是一门可以跨平台的语言，就是因为java源代码的编译结果字节码文件，而字节码文件是在JVM上面运行的，JVM是java技术的真正核心，俗话说得好，一个人对java理解的深度取决于他对JVM的理解深度，由此可以看出，JVM是我们的重中之重；2、字节码文件加载到JVM中又是经历了一个怎样的过程呢，那我们就读一下下面的这一篇文章吧！畅谈类加载的过程 3、java王国的国王想知道JVM这个小伙是怎么做的这么优秀的，谁先彻底研究清除，重重有赏，无数谋士纷纷前往，但又有几个真的了解了这个城府如此之深的小伙呢；但我们不能放弃，下面就让我们一起去剖析一下JVM到底是一个什么东西，他是如何做到外交部长交给他的任务的：绑架JVM]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>java基础</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[新的开始]]></title>
-    <url>%2F2017%2F12%2F02%2F%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2%2F</url>
-    <content type="text"><![CDATA[导语： 红红火火，恍恍惚惚，大学已经走过了两年半，对于计算机专业的学生来说，马上就要准备春招了；在几位大佬的帮助下，自己也被中国最好的几个公司面试了一遍，说实话，打击挺大的，感觉自己一无是处，但是更多的是庆幸吧，幸好有他们几个，要不然这样的我直接去社会上，怕是会被现实打击的站不起来，慢慢的变成另一种模样。作为一般院校的学生，我们真的和那些学生差距挺大的，或许我们一开始的学习体系就是错的，我们的瞎忙活只是为了自我安慰，给自己一种自己还可以的假象，我们真的要学会开眼看世界，我们学习速度远远跟不上自己脑海中那些学霸的速度，更不要说现在计算机的发展速度，我们真的应该更努力的，我们肯定也可以更努力的。 一、我的大学&emsp;&emsp;我是一名来自东北师范大学计算机学院的学生，我们学校的模式就是大一学院疯狂的向学生推荐ACM，当你坚持训练几个月甚至一年的时候，很多人会因为不知道这个以后会干什么的选择放弃，因为我们的ACM就是不停的刷题，其他什么都不用做，拿个奖项学院就可以为你保研；假如你不想干ACM，学校还有很多工作室，这里面你可以拿着一些工资，然后不停的为学校工作，做各种网站；上课状态就是进入教室，看老师已经用了N年的PPT，用着古老的软件，还告诉我们说，讲的是一种思想，你们要学习我这种思想，然后我们就像文科生一样，考前背背书就行了，就这样日如一日，年复一年，我们毕业了，很大一部分也留校读研了，然后呢？以后也不知道干什么。就好像没有人真正的去学习技术，每一个团队都感觉好努力，可又都好麻木。我相信很多大学的学生也是这样的，因为我们没有一个人来正确的引导我们，我们根本就见不了那么多东西，根本就没有听说过，没有一个先例，我们整天都在瞎忙，就像我们的高考一样 ，你做了再多题，假如方向不对的话，有用吗，为什么县城的高中很少出清华北大的学生，不是因为他们差，因为他们没有一条完整的道路去走，一切都要靠自己摸索。我们应该怀着一颗谦卑的心，不要让贫穷限制了你的眼界。 二、我这两年走的弯路&emsp;&emsp;大一刚入学校，在老师和学长学姐的引导下，加各种社团，然后也跟着ACM集训，但是性格原因，我真的不适合那种放弃所有，只为刷题的日子，然后其他的又啥都不懂，挺难受的，然后又听我姐的去学了前端开发，学了一些基本的语句就去找工作了，其实上没有一点深度，也就没有下心思去研究，而是把那些语句给背了下来，这 不是学习，这是背书 ；大二开学后开始学习javaWeb开发，在自己刚刚学会的时候就开始跟着开发了 ，每天就是分析 需求，敲代码，然后就是背书，不错，依然是背书，看起来学的知识面很宽，其实上都是背书的过程，一年中在几个项目中缝缝补补，在社团中兢兢业业，然后大二就结束了；大三感觉自己翅膀硬了，会自己接外包了，就有点飘了，不停的自己开发新的项目，同样的技术，不停的复制代码，等到面试的 时候 ，忍不住爆粗口，我在 我们这明明很厉害了啊，为啥啥都不会呢，他们是不是在为难我胖虎，很显然，人家懒得为难你胖虎，就是单纯因为你太菜了；写到这里，心里头 忍不住飘来了一阵感伤…… 三、我的未来之旅&emsp;&emsp;以前的博客已经写了一百多篇了，要放弃还挺有点舍不得，但是以前的博客就像是一个错题本一样，把自己遇到的错题和最新的背的书记录下来 ，这不是技术文章，而是记述文章，接下来的半年甚至一年中，我会在这个新家写一个大学生的java学习之路的专栏，把自己心中的那个路线以及我个人的理解写出来，仅供大家参考，更多的是请大家批评指正。]]></content>
-      <categories>
-        <category>随笔</category>
-      </categories>
-      <tags>
-        <tag>前言</tag>
-      </tags>
-  </entry>
+<search> 
+  
+    
+    <entry>
+      <title><![CDATA[Mysql索引实现原理]]></title>
+      <url>/2017/12/08/sql002/</url>
+      <content type="html"></content>
+      
+        <categories>
+            
+            <category> Sql </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Mysql </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Mysql索引基本操作详解]]></title>
+      <url>/2017/12/05/sql001/</url>
+      <content type="html"><![CDATA[<h3 id="大学生眼中的网站"><a href="#大学生眼中的网站" class="headerlink" title="大学生眼中的网站"></a>大学生眼中的网站</h3><blockquote>
+<p>我也是个大三的学生，绝对没有贬低的意思。</p>
+</blockquote>
+<p>&emsp;&emsp;当我们知道自己被计算机学院录取的时候，我们都怀着好奇与忐忑的心情，开始了我们的大学；好奇的是：我们平常生活中使用的这些网站和APP都是怎么做出来的呢，我以后也是干这个的吗；忐忑的是：wco我平时就会打游戏和看视频，那些玩意我能学会吗，好起来逼格都好高啊。当我们刚开始接触代码时候的那种油然而生的装逼之心 ，忍不住发了个说说，告诉身边的人，我也是电视里那种用代码的人了；经过了一年的沉浮，我们大部分人都已经是开发小能手了，我们可以各种徒手做网站、APP，内心充满了雄心壮志，但是我们的网站的效率是怎样的的呢，有没有数据过万，加载速度就明显降低呢，我们应该怎么去提高我们的查询效率呢？缓存还是索引，这是一个问题。<a id="more"></a><br>&emsp;&emsp;使用缓存是一种方法，现在比较火的有Redis和Memcached,但是当处理一些动态数据的时候，我们的缓存方法肯定会出现问题，我会在另一篇博客中重点讲解一下；本篇主要是用的是数据库索引；</p>
+<h3 id="随机生成一百万数据"><a href="#随机生成一百万数据" class="headerlink" title="随机生成一百万数据"></a>随机生成一百万数据</h3><p>&emsp;&emsp;我们使用数据库索引是为了处理大数据问题的，可是我们 没有数据啊，这可真是难倒了一堆好汉；但是大哥们，我们要注意的时候，计算机多少数据不可以自动生成，他可是我们的傻兄弟啊，那咱们就来教一下这个傻傻的小兄弟，先生成个一百万的数据：</p>
+<h4 id="创建一个简单的用户表"><a href="#创建一个简单的用户表" class="headerlink" title="创建一个简单的用户表"></a>创建一个简单的用户表</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">CREATE TABLE `t_user_memory` (  </div><div class="line">    `id` INT (11) NOT NULL AUTO_INCREMENT,  </div><div class="line">    `username` VARCHAR(50) NOT NULL DDEFAULT &apos;&apos;,  </div><div class="line">    `password` VARCHAR(50) NOT NULL DDEFAULT &apos;&apos;,  </div><div class="line">    PRIMARY KEY (`id`),  </div><div class="line">) ENGINE = MEMORY AUTO_INCREMENT = 1 DEFAULT CHARSET = utf8</div></pre></td></tr></table></figure>
+<p><b>依次执行下面的操作：</b><br>1、随机产生长度为n的字符串的函数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">CREATE FUNCTION `rand_str`(n INT) RETURNS varchar(255) CHARSET latin1  </div><div class="line">BEGIN   </div><div class="line">DECLARE chars_str varchar(100) DEFAULT &apos;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&apos;;   </div><div class="line">DECLARE return_str varchar(255) DEFAULT &apos;&apos; ;  </div><div class="line">DECLARE i INT DEFAULT 0;   </div><div class="line">WHILE i &lt; n DO   </div><div class="line">SET return_str = concat(return_str,substring(chars_str , FLOOR(1 + RAND()*62 ),1));   </div><div class="line">SET i = i +1;   </div><div class="line">END WHILE;   </div><div class="line">RETURN return_str;   </div><div class="line">END</div></pre></td></tr></table></figure></p>
+<p>2、向数据库中添加n条数据的函数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">CREATE  PROCEDURE `add_user`(IN n int)  </div><div class="line">BEGIN    </div><div class="line">  DECLARE i INT DEFAULT 1;  </div><div class="line">    WHILE (i &lt;= n ) DO  </div><div class="line">      INSERT into t_user_memory (username,password) VALUES (rand_str(20),rand_str(20));  </div><div class="line">            set i=i+1;  </div><div class="line">    END WHILE;  </div><div class="line">END</div></pre></td></tr></table></figure></p>
+<p>3、调用插入函数,并插入一百万的数据：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">CALL add_user(1000000)</div></pre></td></tr></table></figure></p>
+<p>依次执行完上面的步骤之后，大概等个四十来分钟（根据计算机的性能），我们可以来看一下效果，如下图：<br><img src="/images/sql/001/01.png" alt=""><img src="/images/sql/001/02.png" alt=""></p>
+<blockquote>
+<p>简单暴力，一百万数据添加完毕 ，我们可以根据自己的需要改变插入条数的大小；</p>
+</blockquote>
+<h3 id="创建数据库索引"><a href="#创建数据库索引" class="headerlink" title="创建数据库索引"></a>创建数据库索引</h3><h4 id="普通索引"><a href="#普通索引" class="headerlink" title="普通索引"></a>普通索引</h4><blockquote>
+<p>这是最基本的索引类型，而且它没有唯一性之类的限制;</p>
+</blockquote>
+<p>1、创建<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">CREATE INDEX indexId ON t_user_memory(id)</div></pre></td></tr></table></figure></p>
+<p>创建成功：<br><img src="/images/sql/001/03.png" alt="创建成功"></p>
+<p>2、索引的删除<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">DROP INDEX indexId ON  t_user_memory</div></pre></td></tr></table></figure></p>
+<p>删除成功：<br><img src="/images/sql/001/04.png" alt="删除成功"></p>
+<h4 id="唯一性索引"><a href="#唯一性索引" class="headerlink" title="唯一性索引"></a>唯一性索引</h4><blockquote>
+<p>这种索引和前面的“普通索引”基本相同，但有一个区别：索引列的所有值都只能出现一次，即必须唯一。</p>
+</blockquote>
+<p>1、创建<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">CREATE UNIQUE INDEX indexId ON t_user_memory(id);</div></pre></td></tr></table></figure></p>
+<p>创建成功：<br><img src="/images/sql/001/05.png" alt="创建成功"><br>2、删除和普通索引一样<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">DROP INDEX indexId ON  t_user_memory</div></pre></td></tr></table></figure></p>
+<h4 id="主键索引"><a href="#主键索引" class="headerlink" title="主键索引"></a>主键索引</h4><blockquote>
+<p>它是一种特殊的唯一索引，不允许有空值。一般是在建表的时候同时创建主键索引，也就是我们的主键。</p>
+</blockquote>
+<h4 id="单列索引-amp-组合索引"><a href="#单列索引-amp-组合索引" class="headerlink" title="单列索引&amp;组合索引"></a>单列索引&amp;组合索引</h4><h5 id="单列索引"><a href="#单列索引" class="headerlink" title="单列索引"></a>单列索引</h5><blockquote>
+<p>依然使用上面的例子，当我们查找一个username = “Taoyongpan”的用户的时候，我们查处了10条，但是每条的密码不一样，我们查询的时候很快的查出 这十条数据，把这十条数据放到一个中间结果集上面，然后再对比密码一一排除，我们在密码上加索引也是同样的原理；</p>
+</blockquote>
+<h5 id="组合索引"><a href="#组合索引" class="headerlink" title="组合索引"></a>组合索引</h5><blockquote>
+<p>当我们把username和password放到一个索引里面的时候就会直接查找到我们所需要的那一条数据，当数据量非常大的时候，会大大提高我们的查找速度，这就是组合索引；</p>
+</blockquote>
+<p>1、创建<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ALTER TABLE t_user_memory ADD INDEX indexUser (username,password)</div></pre></td></tr></table></figure></p>
+<p>创建成功：<br><img src="/images/sql/001/06.png" alt="创建成功"></p>
+<p>2、删除操作同上</p>
+<h3 id="数据库索引的利与弊"><a href="#数据库索引的利与弊" class="headerlink" title="数据库索引的利与弊"></a>数据库索引的利与弊</h3><h4 id="利"><a href="#利" class="headerlink" title="利"></a>利</h4><p>1、建立索引的列可以保证行的唯一性，生成唯一的rowId<br>2、建立索引可以有效缩短数据的检索时间<br>3、建立索引可以加快表与表之间的连接<br>4、为用来排序或者是分组的字段添加索引可以加快分组和排序顺序</p>
+<h4 id="弊"><a href="#弊" class="headerlink" title="弊"></a>弊</h4><p>1、创建索引和维护索引需要时间成本，这个成本随着数据量的增加而加大<br>2、创建索引和维护索引需要空间成本，每一条索引都要占据数据库的物理存储空间，数据量越大，占用空间也越大（数据表占据的是数据库的数据空间）<br>3、虽然索引大大提高了查询速度，同时却会降低更新表的速度，如对表进行INSERT、UPDATE和DELETE。因为更新表时，MySQL不仅要保存数据，还要保存一下索引文件。</p>
+<h3 id="下篇预告"><a href="#下篇预告" class="headerlink" title="下篇预告"></a>下篇预告</h3><blockquote>
+<p>下一篇我们一起来学习一下，索引的原理是怎么的，为什么可以提高查询效率呢，等问题，我们下一篇再见。</p>
+</blockquote>
+]]></content>
+      
+        <categories>
+            
+            <category> Sql </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Mysql </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[绑架JVM]]></title>
+      <url>/2017/12/05/java002/</url>
+      <content type="html"><![CDATA[<h3 id="绑架JVM"><a href="#绑架JVM" class="headerlink" title="绑架JVM"></a>绑架JVM</h3>]]></content>
+      
+        <categories>
+            
+            <category> Java </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> java基础 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[畅谈类加载的过程]]></title>
+      <url>/2017/12/04/java001/</url>
+      <content type="html"><![CDATA[<h3 id="类加载"><a href="#类加载" class="headerlink" title="类加载"></a>类加载</h3>]]></content>
+      
+        <categories>
+            
+            <category> Java </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> java基础 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[HelloWorld引发的思考]]></title>
+      <url>/2017/12/03/%E4%B8%80%E4%B8%AAHelloWorld%E5%BC%95%E5%8F%91%E7%9A%84%E6%80%9D%E8%80%83/</url>
+      <content type="html"><![CDATA[<h2 id="一、手写源程序"><a href="#一、手写源程序" class="headerlink" title="一、手写源程序"></a>一、手写源程序</h2><p>&emsp;&emsp;我们打开任何一本Java学习的书籍，都会告诉我们用记事本或者其他的文本编辑器写一个简单的小程序，然后javac 类名，进行编译，会在同一文件下生成一个同名的.calss文件；我们这里先怒写一个HelloWorld.java，代码如下：</p>
+<a id="more"></a>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">public class HelloWorld &#123;</div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        System.out.println(&quot;Hello World!&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>.class文件反序列化，代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">package com.tao.study.one;</div><div class="line"></div><div class="line">public class HelloWorld &#123;</div><div class="line">    public HelloWorld() &#123;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void main(String[] args) &#123;</div><div class="line">        System.out.println(&quot;Hello World!&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们用cmd命令打开我们编译后的.class文件，cmd的命令为:javap -v 类名，HelloWorld.class的内部代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div></pre></td><td class="code"><pre><div class="line">Classfile /E:/DataBase/Idea/JavaStudy/out/production/JavaStudy/com/tao/study/one/HelloWorld.class</div><div class="line">  Last modified 2017-12-3; size 570 bytes</div><div class="line">  MD5 checksum e34e8917fa1c76751b4ea9a2f491d17a</div><div class="line">  Compiled from &quot;HelloWorld.java&quot;</div><div class="line">public class com.tao.study.one.HelloWorld</div><div class="line">  minor version: 0   //副版本号</div><div class="line">  major version: 52  //编译器版本号 == jdk1.8</div><div class="line">  flags: ACC_PUBLIC, ACC_SUPER</div><div class="line">//常量池</div><div class="line">Constant pool:</div><div class="line">   #1 = Methodref          #6.#20         // java/lang/Object.&quot;&lt;init&gt;&quot;:()V</div><div class="line">   #2 = Fieldref           #21.#22        // java/lang/System.out:Ljava/io/PrintStream;</div><div class="line">   #3 = String             #23            // Hello World!</div><div class="line">   #4 = Methodref          #24.#25        // java/io/PrintStream.println:(Ljava/lang/String;)V</div><div class="line">   #5 = Class              #26            // com/tao/study/one/HelloWorld</div><div class="line">   #6 = Class              #27            // java/lang/Object</div><div class="line">   #7 = Utf8               &lt;init&gt;</div><div class="line">   #8 = Utf8               ()V</div><div class="line">   #9 = Utf8               Code</div><div class="line">  #10 = Utf8               LineNumberTable</div><div class="line">  #11 = Utf8               LocalVariableTable</div><div class="line">  #12 = Utf8               this</div><div class="line">  #13 = Utf8               Lcom/tao/study/one/HelloWorld;</div><div class="line">  #14 = Utf8               main</div><div class="line">  #15 = Utf8               ([Ljava/lang/String;)V</div><div class="line">  #16 = Utf8               args</div><div class="line">  #17 = Utf8               [Ljava/lang/String;</div><div class="line">  #18 = Utf8               SourceFile</div><div class="line">  #19 = Utf8               HelloWorld.java</div><div class="line">  #20 = NameAndType        #7:#8          // &quot;&lt;init&gt;&quot;:()V</div><div class="line">  #21 = Class              #28            // java/lang/System</div><div class="line">  #22 = NameAndType        #29:#30        // out:Ljava/io/PrintStream;</div><div class="line">  #23 = Utf8               Hello World!</div><div class="line">  #24 = Class              #31            // java/io/PrintStream</div><div class="line">  #25 = NameAndType        #32:#33        // println:(Ljava/lang/String;)V</div><div class="line">  #26 = Utf8               com/tao/study/one/HelloWorld</div><div class="line">  #27 = Utf8               java/lang/Object</div><div class="line">  #28 = Utf8               java/lang/System</div><div class="line">  #29 = Utf8               out</div><div class="line">  #30 = Utf8               Ljava/io/PrintStream;</div><div class="line">  #31 = Utf8               java/io/PrintStream</div><div class="line">  #32 = Utf8               println</div><div class="line">  #33 = Utf8               (Ljava/lang/String;)V</div><div class="line">&#123;</div><div class="line">  public com.tao.study.one.HelloWorld();</div><div class="line">    descriptor: ()V</div><div class="line">    flags: ACC_PUBLIC</div><div class="line">    Code:</div><div class="line">      stack=1, locals=1, args_size=1</div><div class="line">         0: aload_0</div><div class="line">         1: invokespecial #1                  // Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V</div><div class="line">         4: return</div><div class="line">      LineNumberTable:</div><div class="line">        line 6: 0</div><div class="line">      LocalVariableTable:</div><div class="line">        Start  Length  Slot  Name   Signature</div><div class="line">            0       5     0  this   Lcom/tao/study/one/HelloWorld;</div><div class="line"></div><div class="line">  public static void main(java.lang.String[]);</div><div class="line">    descriptor: ([Ljava/lang/String;)V</div><div class="line">    flags: ACC_PUBLIC, ACC_STATIC</div><div class="line">    Code:</div><div class="line">      stack=2, locals=1, args_size=1</div><div class="line">         0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;</div><div class="line">         3: ldc           #3                  // String Hello World!</div><div class="line">         5: invokevirtual #4                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V</div><div class="line">         8: return</div><div class="line">      LineNumberTable:</div><div class="line">        line 8: 0</div><div class="line">        line 9: 8</div><div class="line">      LocalVariableTable:</div><div class="line">        Start  Length  Slot  Name   Signature</div><div class="line">            0       9     0  args   [Ljava/lang/String;</div><div class="line">&#125;</div><div class="line">SourceFile: &quot;HelloWorld.java&quot;</div></pre></td></tr></table></figure></p>
+<h2 id="二、提出疑问"><a href="#二、提出疑问" class="headerlink" title="二、提出疑问"></a>二、提出疑问</h2><p>&emsp;&emsp;看到上面的结果，我们的第一感觉肯定是，woc，怎么这么神奇，这里面都发生了什么呢？那我们就要带着这些疑问去探究他们了，在百度上一顿操作之后，我们知道了javac是java自带的编译器，将java语言规范转化成JVM能够识别的字节码文件(.class文件)；这是就更加懵了，甚至有点想跳过，一个过来人告诉你，不要这样子哦。下面我们来 总结一下这里面的问题，然后去探究一下java的世界到底是一个怎样的存在。</p>
+<h3 id="问题有："><a href="#问题有：" class="headerlink" title="问题有："></a>问题有：</h3><p>1、 什么是javac编译器？它又有什么作用？它又是怎样工作的呢？<br>2、 为什么要把字节码文件加载到JVM中呢？字节码文件又是如何加载到JVM中的？<br>3、 JVM是什么？它是如何工作的呢？</p>
+<h2 id="三、解决疑问"><a href="#三、解决疑问" class="headerlink" title="三、解决疑问"></a>三、解决疑问</h2><p>&emsp;&emsp;看到这些疑问你是不是有点兴奋了，原来java可以学习的东西有这么多的啊，那我们就开始我们的探索之旅吧。问题要一个个的解决，我们就按顺序进行研究吧！</p>
+<h4 id="编译原理"><a href="#编译原理" class="headerlink" title="编译原理"></a>编译原理</h4><p>1.1 &emsp;javac是java语言自带的一种编译器，我们都知道java有自己的语言规范，写错了一小处代码，整个项目都会无法运行，这就是规范的魅力，无规矩不成方圆，代码世界中同样如此，每一门语言都是一个王国，我们都是它的臣民；但是java语言不是机器语言，我们的机器是无法识别的，于是我们的java国王大手一挥创建了外交部，让javac负责这个部门，让它负责对外交流，但是javac这个小伙发现一个人的力量是有限的，要充分发挥自己的部长身份，于是他找到自己的得力干将JVM，让他负责与机器王国进行交流；每当国王发布新的命令的时候(.java文件)，javac就将其编译成字节码文件，然后直接丢给自己的小弟JVM，自己只负责与国王(java类)对话交流；</p>
+<p>1.2 &emsp;Java的编译环节分为四个步骤，绝大部分的编译器也是这样设计的，四个步骤依次为：</p>
+<ul>
+<li>词法解析</li>
+<li>语法解析</li>
+<li>语义解析</li>
+<li>生成字节码<br>&emsp;&emsp;编译器的功能就是将java代码翻译成JVM规范下的字节码文件，最重要的点是符合jvm规范，我们的翻译过程也主要是围绕着从一个规范到另一个规范的过程展开；<br>1.2.1 &emsp;词法解析：<br>词法解析的作用就是生成符合java语法规范的Token序列；<blockquote>
+<p><code>注释：</code>Token序列就是一组对应源码字符集合的单词序列，其实上就是一个枚举类型，内部定义了许多符合java语法规范并与源码字符集合相对应的枚举常量；</p>
+</blockquote>
+</li>
+</ul>
+<p>&emsp;&emsp;这时我们肯定会非常好奇，java源码是如何转换成Token序列的呢？java的源码又是如何和已经生成的Token序列保持一个长久的对应关系呢？<br>&emsp;&emsp;词法解析器在将源码翻译成Token序列之前，会先把这个源码字符集合转化为一个Name对象，每一个源码字符集合都是一个Name对象；Keywsords这个类(这里可以把它理解为一个工具类，名字不重要)会把所有的枚举常量转换为一个Name对象，然后将其存储在Name对象的内部类Table中，这时候Name对象就与Token序列建立了一个映射关系；每当我们传进来一个源码字符集合的Name对象的时候，词法解析器就会先找到Name类的内部类Table，在里面获取到对应的Token对象后，将源码字符集合与对应的Token对象的关系存储在Keywords类的Token key[]数组中；我们可以用一张图来表示这个过程，如下：<br><img src="/images/cifafenxi.png" alt=""></p>
+<p>1.2.2 &emsp;语法解析：<br>语法解析的作用就是把匹配得到的Token序列整合成一个语法树；</p>
+<p>1.2.3 &emsp;语义分析：<br>语义分析就是将语法分析产生的语法树进一步完善，例如给类 添加的默认构造函数，检查变量在使用前是否初始化，将一些常量进行合并处理，检查操作变量类型是否匹配，检查所有的操作语句是否可达，检查异常是否已经捕获或者抛出，解除java语法糖，等。</p>
+<p>1.2.4 &emsp;生成字节码：<br>遍历语法树，生成最终的字节码。</p>
+<h4 id="Java虚拟机-JVM"><a href="#Java虚拟机-JVM" class="headerlink" title="Java虚拟机(JVM)"></a>Java虚拟机(JVM)</h4><p>1、大家都知道Java是一门可以跨平台的语言，就是因为java源代码的编译结果字节码文件，而字节码文件是在JVM上面运行的，JVM是java技术的真正核心，俗话说得好，一个人对java理解的深度取决于他对JVM的理解深度，由此可以看出，JVM是我们的重中之重；<br>2、字节码文件加载到JVM中又是经历了一个怎样的过程呢，那我们就读一下下面的这一篇文章吧！<br><b><a href="/2017/12/04/java001/">畅谈类加载的过程</a></b></p>
+<p>3、java王国的国王想知道JVM这个小伙是怎么做的这么优秀的，谁先彻底研究清除，重重有赏，无数谋士纷纷前往，但又有几个真的了解了这个城府如此之深的小伙呢；但我们不能放弃，下面就让我们一起去剖析一下JVM到底是一个什么东西，他是如何做到外交部长交给他的任务的：<br><b><a href="/2017/12/05/java002/">绑架JVM</a></b></p>
+]]></content>
+      
+        <categories>
+            
+            <category> Java </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> java基础 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[新的开始]]></title>
+      <url>/2017/12/02/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/</url>
+      <content type="html"><![CDATA[<h2 id="导语："><a href="#导语：" class="headerlink" title="导语："></a>导语：</h2><blockquote>
+<p>   红红火火，恍恍惚惚，大学已经走过了两年半，对于计算机专业的学生来说，马上就要准备春招了；在几位大佬的帮助下，自己也被中国最好的几个公司面试了一遍，说实话，打击挺大的，感觉自己一无是处，但是更多的是庆幸吧，幸好有他们几个，要不然这样的我直接去社会上，怕是会被现实打击的站不起来，慢慢的变成另一种模样。作为一般院校的学生，我们真的和那些学生差距挺大的，或许我们一开始的学习体系就是错的，我们的瞎忙活只是为了自我安慰，给自己一种自己还可以的假象，我们真的要学会开眼看世界，我们学习速度远远跟不上自己脑海中那些学霸的速度，更不要说现在计算机的发展速度，我们真的应该更努力的，我们肯定也可以更努力的。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="一、我的大学"><a href="#一、我的大学" class="headerlink" title="一、我的大学"></a>一、我的大学</h2><p>&emsp;&emsp;我是一名来自东北师范大学计算机学院的学生，我们学校的模式就是大一学院疯狂的向学生推荐ACM，当你坚持训练几个月甚至一年的时候，很多人会因为不知道这个以后会干什么的选择放弃，因为我们的ACM就是不停的刷题，其他什么都不用做，拿个奖项学院就可以为你保研；假如你不想干ACM，学校还有很多工作室，这里面你可以拿着一些工资，然后不停的为学校工作，做各种网站；上课状态就是进入教室，看老师已经用了N年的PPT，用着古老的软件，还告诉我们说，讲的是一种思想，你们要学习我这种思想，然后我们就像文科生一样，考前背背书就行了，就这样日如一日，年复一年，我们毕业了，很大一部分也留校读研了，然后呢？以后也不知道干什么。就好像没有人真正的去学习技术，每一个团队都感觉好努力，可又都好麻木。我相信很多大学的学生也是这样的，因为我们没有一个人来正确的引导我们，我们根本就见不了那么多东西，根本就没有听说过，没有一个先例，我们整天都在瞎忙，就像我们的高考一样 ，你做了再多题，假如方向不对的话，有用吗，为什么县城的高中很少出清华北大的学生，不是因为他们差，因为他们没有一条完整的道路去走，一切都要靠自己摸索。我们应该怀着一颗谦卑的心，不要让贫穷限制了你的眼界。</p>
+<h2 id="二、我这两年走的弯路"><a href="#二、我这两年走的弯路" class="headerlink" title="二、我这两年走的弯路"></a>二、我这两年走的弯路</h2><p>&emsp;&emsp;大一刚入学校，在老师和学长学姐的引导下，加各种社团，然后也跟着ACM集训，但是性格原因，我真的不适合那种放弃所有，只为刷题的日子，然后其他的又啥都不懂，挺难受的，然后又听我姐的去学了前端开发，学了一些基本的语句就去找工作了，其实上没有一点深度，也就没有下心思去研究，而是把那些语句给背了下来，这 不是学习，这是背书 ；大二开学后开始学习javaWeb开发，在自己刚刚学会的时候就开始跟着开发了 ，每天就是分析 需求，敲代码，然后就是背书，不错，依然是背书，看起来学的知识面很宽，其实上都是背书的过程，一年中在几个项目中缝缝补补，在社团中兢兢业业，然后大二就结束了；大三感觉自己翅膀硬了，会自己接外包了，就有点飘了，不停的自己开发新的项目，同样的技术，不停的复制代码，等到面试的 时候 ，忍不住爆粗口，我在 我们这明明很厉害了啊，为啥啥都不会呢，他们是不是在为难我胖虎，很显然，人家懒得为难你胖虎，就是单纯因为你太菜了；写到这里，心里头 忍不住飘来了一阵感伤……</p>
+<h2 id="三、我的未来之旅"><a href="#三、我的未来之旅" class="headerlink" title="三、我的未来之旅"></a>三、我的未来之旅</h2><p>&emsp;&emsp;以前的博客已经写了一百多篇了，要放弃还挺有点舍不得，但是以前的博客就像是一个错题本一样，把自己遇到的错题和最新的背的书记录下来 ，这不是技术文章，而是记述文章，接下来的半年甚至一年中，我会在这个新家写一个大学生的java学习之路的专栏，把自己心中的那个路线以及我个人的理解写出来，仅供大家参考，更多的是请大家批评指正。</p>
+]]></content>
+      
+        <categories>
+            
+            <category> 随笔 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> 前言 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+  
+  
 </search>
