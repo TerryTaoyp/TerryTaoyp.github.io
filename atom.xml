@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2017-12-08T09:56:36.546Z</updated>
+  <updated>2017-12-08T12:38:03.788Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://yoursite.com/2017/12/08/sql002/"/>
     <id>http://yoursite.com/2017/12/08/sql002/</id>
     <published>2017-12-07T16:00:00.000Z</published>
-    <updated>2017-12-08T09:56:36.546Z</updated>
+    <updated>2017-12-08T12:38:03.788Z</updated>
     
     <summary type="html">
     
@@ -127,13 +127,25 @@
     <link href="http://yoursite.com/2017/12/04/java001/"/>
     <id>http://yoursite.com/2017/12/04/java001/</id>
     <published>2017-12-03T16:00:00.000Z</published>
-    <updated>2017-12-04T10:58:25.575Z</updated>
+    <updated>2017-12-13T13:06:48.160Z</updated>
     
-    <content type="html"><![CDATA[<h3 id="类加载"><a href="#类加载" class="headerlink" title="类加载"></a>类加载</h3>]]></content>
+    <content type="html"><![CDATA[<h3 id="什么是类加载"><a href="#什么是类加载" class="headerlink" title="什么是类加载"></a>什么是类加载</h3><p>&emsp;&emsp;前面我们说道java外交部长（编译器）就是做到了把java国王交代的任务分给自己的小弟（JVM），那么他交代给小弟JVM的过程其实上就是我的类加载过程；既然有这个交代的过程那肯定就有一个传话的人（公公），要不然JVM怎么知道老大的交代的任务呢，我们一般把这个人叫做类加载器，他负责把外交部长的编译产物（字节码文件）送到JVM的家中。<br><a id="more"></a></p>
+<h3 id="类加载器"><a href="#类加载器" class="headerlink" title="类加载器"></a>类加载器</h3><h4 id="官方解释："><a href="#官方解释：" class="headerlink" title="官方解释："></a>官方解释：</h4><p>&emsp;&emsp;类加载器是JVM执行类加载机制的前提，其主要任务为根据一个类的全限定名来读取此类的二进制字节流到JVM内部，然后转换为一个与目标类对应的java.lang.Class对象实例；</p>
+<h4 id="英文名字：ClassLoader"><a href="#英文名字：ClassLoader" class="headerlink" title="英文名字：ClassLoader"></a>英文名字：ClassLoader</h4><p>1、ClassLoader除了将Class加载到JVM之外，还有一个重要的作用就是审查每个类应该有谁加载，它是一种父优先的等级加载机制；<br>2、ClassLoader还有一个重要的作用就是将Class字节码重新解析成JVM统一要求的对象格式；</p>
+<h4 id="主要方法"><a href="#主要方法" class="headerlink" title="主要方法"></a>主要方法</h4><p>1、defineClass();<br>&emsp;&emsp;defineClass方法 的主要作用是将byte 字节流解析成JVM能够识别的class对象，这个方法意味着 我们不仅仅可以通过class文件去实例化对象，还可以其他方式实例化对象，例如我们通过网络接收到一个类的字节码；defineClass的代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">protected final Class&lt;?&gt; defineClass(String name, byte[] b, int off, int len,</div><div class="line">                                        ProtectionDomain protectionDomain)</div><div class="line">       throws ClassFormatError</div><div class="line">   &#123;</div><div class="line">       protectionDomain = preDefineClass(name, protectionDomain);</div><div class="line">       String source = defineClassSourceLocation(protectionDomain);</div><div class="line">       Class&lt;?&gt; c = defineClass1(name, b, off, len, protectionDomain, source);</div><div class="line">       postDefineClass(c, protectionDomain);</div><div class="line">       return c;</div><div class="line">   &#125;</div><div class="line"></div><div class="line"></div><div class="line">   protected final Class&lt;?&gt; defineClass(String name, java.nio.ByteBuffer b,</div><div class="line">                                        ProtectionDomain protectionDomain)</div><div class="line">       throws ClassFormatError</div><div class="line">   &#123;</div><div class="line">       int len = b.remaining();</div><div class="line"></div><div class="line">       // Use byte[] if not a direct ByteBufer:</div><div class="line">       if (!b.isDirect()) &#123;</div><div class="line">           if (b.hasArray()) &#123;</div><div class="line">               return defineClass(name, b.array(),</div><div class="line">                                  b.position() + b.arrayOffset(), len,</div><div class="line">                                  protectionDomain);</div><div class="line">           &#125; else &#123;</div><div class="line">               // no array, or read-only array</div><div class="line">               byte[] tb = new byte[len];</div><div class="line">               b.get(tb);  // get bytes out of byte buffer.</div><div class="line">               return defineClass(name, tb, 0, len, protectionDomain);</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       protectionDomain = preDefineClass(name, protectionDomain);</div><div class="line">       String source = defineClassSourceLocation(protectionDomain);</div><div class="line">       Class&lt;?&gt; c = defineClass2(name, b, b.position(), len, protectionDomain, source);</div><div class="line">       postDefineClass(c, protectionDomain);</div><div class="line">       return c;</div><div class="line">   &#125;</div></pre></td></tr></table></figure></p>
+<p>2、findClass();<br>&emsp;&emsp;实现类的加载规则，取得要加载类的字节码，通常是和defineClass()一起使用的；查找类，返回java.lang.Class类的实例；<br>3、loadClass();<br>&emsp;&emsp;加载类，返回java.lang.Class类的实例；<br>4、resolveClass();<br>&emsp;&emsp;连接指定的一个类，如果你想在类被加载到JVM中的时候就被链接（Link），则调用resolveClass()方法；</p>
+<h3 id="Class文件的加载过程"><a href="#Class文件的加载过程" class="headerlink" title="Class文件的加载过程"></a>Class文件的加载过程</h3><p>&emsp;&emsp;我们都知道类的加载过程有，加载、链接、初始化、卸载；而链接过程又分为验证、准备、解析阶段；那么我们整天挂在嘴边的东西，实质上又是调用了什么方法了呢，下面先看一个图：<br><img src="/images/java/001/01.png" alt=""><br>1、找到.class文件并把这个文件包含的字节码加载到内存中；<br>2、字节码验证、Class类数据结构分析及相应的内存分配和最后符号表的链接；<br>3、类中静态属性和初始化赋值，以及静态块的执行；</p>
+<h4 id="步骤分析"><a href="#步骤分析" class="headerlink" title="步骤分析"></a>步骤分析</h4><h5 id="加载"><a href="#加载" class="headerlink" title="加载"></a>加载</h5><p>&emsp;&emsp;调用findClass()方法找到对应的字节码文件；</p>
+<h5 id="验证："><a href="#验证：" class="headerlink" title="验证："></a>验证：</h5><p>&emsp;&emsp;验证阶段JVM所执行的一系列验证大概分为：格式验证、语义验证、操作验证、符号引用验证；<br>1、格式验证的主要任务就是检查当前正在加载的字节码文件是否符合JVM规范 ，是否是一个有效的字节码文件，格式验证的主要任务是检查当前正在加载的字节码文件中的前四个字节是否是0xCAFEBABE；<br>2、语义验证：验证字节码信息是否符合java语法规范；<br>3、操作验证：JVM会对类型的方法执行验证，以确保一个类的方法在执行时，不会对JVM产生不良影响不会因此导致JVM的进程出现崩溃；<br>4、符号引用验证：对常量池中的各种符号引用执行验证；</p>
+<h5 id="准备阶段："><a href="#准备阶段：" class="headerlink" title="准备阶段："></a>准备阶段：</h5><p>&emsp;&emsp;对存放在方法区 中类数据信息的类变量执行初始化，这里所执行的初始化操作并非是指类加载阶段中的初始化操作，这里仅仅是为类中的所有静态变量分配内存空间，并为其设置一个初始值，而非用户手动执行赋值操作；</p>
+<h5 id="解析阶段："><a href="#解析阶段：" class="headerlink" title="解析阶段："></a>解析阶段：</h5><p>&emsp;&emsp;主要任务是将字节码常量池中的符号引用全部转换为直接引用，包括类、接口、方法和字段的符号引用。</p>
+<h5 id="初始化："><a href="#初始化：" class="headerlink" title="初始化："></a>初始化：</h5><p>&emsp;&emsp;在这个阶段中，JVM会将一个类中所有被static关键字标示的代码统统执行一遍，如果执行的是静态常量，那么用户将会使用用户指定的值覆盖掉之前在准备阶段中JVM为其设置的初始值，如果程序中并没有为静态变量显式指定赋值操作，那么所持有的值仍然是之前的初始值；反之如果执行的是static代码块，那么在初始化阶段中，JVM就将会执行static代码块中定义的所有操作；</p>
+<h3 id="下集预告"><a href="#下集预告" class="headerlink" title="下集预告"></a>下集预告</h3><p>接下来的文章中会手写一个简单的类加载器进行进一步的讲解。</p>
+]]></content>
     
     <summary type="html">
     
-      &lt;h3 id=&quot;类加载&quot;&gt;&lt;a href=&quot;#类加载&quot; class=&quot;headerlink&quot; title=&quot;类加载&quot;&gt;&lt;/a&gt;类加载&lt;/h3&gt;
+      &lt;h3 id=&quot;什么是类加载&quot;&gt;&lt;a href=&quot;#什么是类加载&quot; class=&quot;headerlink&quot; title=&quot;什么是类加载&quot;&gt;&lt;/a&gt;什么是类加载&lt;/h3&gt;&lt;p&gt;&amp;emsp;&amp;emsp;前面我们说道java外交部长（编译器）就是做到了把java国王交代的任务分给自己的小弟（JVM），那么他交代给小弟JVM的过程其实上就是我的类加载过程；既然有这个交代的过程那肯定就有一个传话的人（公公），要不然JVM怎么知道老大的交代的任务呢，我们一般把这个人叫做类加载器，他负责把外交部长的编译产物（字节码文件）送到JVM的家中。&lt;br&gt;
     
     </summary>
     
