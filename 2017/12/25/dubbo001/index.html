@@ -78,7 +78,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="java基础," />
+  <meta name="keywords" content="分布式," />
 
 
 
@@ -96,20 +96,20 @@
 
 
 
-<meta name="description" content="什么是类加载&amp;emsp;&amp;emsp;前面我们说道java外交部长（编译器）就是做到了把java国王交代的任务分给自己的小弟（JVM），那么他交代给小弟JVM的过程其实上就是我的类加载过程；既然有这个交代的过程那肯定就有一个传话的人（公公），要不然JVM怎么知道老大的交代的任务呢，我们一般把这个人叫做类加载器，他负责把外交部长的编译产物（字节码文件）送到JVM的家中。">
-<meta name="keywords" content="java基础">
+<meta name="description" content="初知Dubbo&amp;emsp;&amp;emsp;前一段时间，在一次模拟面试中，一个学长告诉我，现在的大学生还是懂一点分布式是比较好的，例如阿里巴巴的Dubbo框架，现在做项目很多公司都会使用这个框架；于是我心心念念这个框架在期末复习的空档时间看了好几次官方文档，都没有太大的作用，今天发了个狠心，决定动手试一下，就像我以前学习SSM框架是一样的，什么都不会，直接上手，所以在下文中，可能涉及到原理讲解的会比较少">
+<meta name="keywords" content="分布式">
 <meta property="og:type" content="article">
-<meta property="og:title" content="畅谈类加载的过程">
-<meta property="og:url" content="http://yoursite.com/2017/12/04/java001/index.html">
+<meta property="og:title" content="Dubbo的简单小demo">
+<meta property="og:url" content="http://yoursite.com/2017/12/25/dubbo001/index.html">
 <meta property="og:site_name" content="陶永攀博客">
-<meta property="og:description" content="什么是类加载&amp;emsp;&amp;emsp;前面我们说道java外交部长（编译器）就是做到了把java国王交代的任务分给自己的小弟（JVM），那么他交代给小弟JVM的过程其实上就是我的类加载过程；既然有这个交代的过程那肯定就有一个传话的人（公公），要不然JVM怎么知道老大的交代的任务呢，我们一般把这个人叫做类加载器，他负责把外交部长的编译产物（字节码文件）送到JVM的家中。">
+<meta property="og:description" content="初知Dubbo&amp;emsp;&amp;emsp;前一段时间，在一次模拟面试中，一个学长告诉我，现在的大学生还是懂一点分布式是比较好的，例如阿里巴巴的Dubbo框架，现在做项目很多公司都会使用这个框架；于是我心心念念这个框架在期末复习的空档时间看了好几次官方文档，都没有太大的作用，今天发了个狠心，决定动手试一下，就像我以前学习SSM框架是一样的，什么都不会，直接上手，所以在下文中，可能涉及到原理讲解的会比较少">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://yoursite.com/images/java/001/01.png">
-<meta property="og:updated_time" content="2017-12-13T13:06:48.160Z">
+<meta property="og:image" content="http://yoursite.com/images/dubbo/001/01.png">
+<meta property="og:updated_time" content="2017-12-25T14:29:12.187Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="畅谈类加载的过程">
-<meta name="twitter:description" content="什么是类加载&amp;emsp;&amp;emsp;前面我们说道java外交部长（编译器）就是做到了把java国王交代的任务分给自己的小弟（JVM），那么他交代给小弟JVM的过程其实上就是我的类加载过程；既然有这个交代的过程那肯定就有一个传话的人（公公），要不然JVM怎么知道老大的交代的任务呢，我们一般把这个人叫做类加载器，他负责把外交部长的编译产物（字节码文件）送到JVM的家中。">
-<meta name="twitter:image" content="http://yoursite.com/images/java/001/01.png">
+<meta name="twitter:title" content="Dubbo的简单小demo">
+<meta name="twitter:description" content="初知Dubbo&amp;emsp;&amp;emsp;前一段时间，在一次模拟面试中，一个学长告诉我，现在的大学生还是懂一点分布式是比较好的，例如阿里巴巴的Dubbo框架，现在做项目很多公司都会使用这个框架；于是我心心念念这个框架在期末复习的空档时间看了好几次官方文档，都没有太大的作用，今天发了个狠心，决定动手试一下，就像我以前学习SSM框架是一样的，什么都不会，直接上手，所以在下文中，可能涉及到原理讲解的会比较少">
+<meta name="twitter:image" content="http://yoursite.com/images/dubbo/001/01.png">
 
 
 
@@ -138,13 +138,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/12/04/java001/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/12/25/dubbo001/"/>
 
 
 
 
 
-  <title>畅谈类加载的过程 | 陶永攀博客</title>
+  <title>Dubbo的简单小demo | 陶永攀博客</title>
   
 
 
@@ -324,7 +324,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/04/java001/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/25/dubbo001/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Taoyongpan">
@@ -341,7 +341,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">畅谈类加载的过程</h1>
+          <h1 class="post-title" itemprop="name headline">Dubbo的简单小demo</h1>
         
 
         <div class="post-meta">
@@ -353,8 +353,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-04T00:00:00+08:00">
-                2017-12-04
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-25T00:00:00+08:00">
+                2017-12-25
               </time>
             
 
@@ -376,8 +376,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
+                  <a href="/categories/分布式/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式</span>
                   </a>
                 </span>
 
@@ -395,8 +395,8 @@
                 <i class="fa fa-comment-o"></i>
               </span>
               
-                <a href="/2017/12/04/java001/#SOHUCS" itemprop="discussionUrl">
-                  <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2017/12/04/java001/" itemprop="commentsCount"></span>
+                <a href="/2017/12/25/dubbo001/#SOHUCS" itemprop="discussionUrl">
+                  <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2017/12/25/dubbo001/" itemprop="commentsCount"></span>
                 </a>
               
             
@@ -404,7 +404,7 @@
 
           
           
-             <span id="/2017/12/04/java001/" class="leancloud_visitors" data-flag-title="畅谈类加载的过程">
+             <span id="/2017/12/25/dubbo001/" class="leancloud_visitors" data-flag-title="Dubbo的简单小demo">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -435,18 +435,19 @@
       
 
       
-        <h3 id="什么是类加载"><a href="#什么是类加载" class="headerlink" title="什么是类加载"></a>什么是类加载</h3><p>&emsp;&emsp;前面我们说道java外交部长（编译器）就是做到了把java国王交代的任务分给自己的小弟（JVM），那么他交代给小弟JVM的过程其实上就是我的类加载过程；既然有这个交代的过程那肯定就有一个传话的人（公公），要不然JVM怎么知道老大的交代的任务呢，我们一般把这个人叫做类加载器，他负责把外交部长的编译产物（字节码文件）送到JVM的家中。<br><a id="more"></a></p>
-<h3 id="类加载器"><a href="#类加载器" class="headerlink" title="类加载器"></a>类加载器</h3><h4 id="官方解释："><a href="#官方解释：" class="headerlink" title="官方解释："></a>官方解释：</h4><p>&emsp;&emsp;类加载器是JVM执行类加载机制的前提，其主要任务为根据一个类的全限定名来读取此类的二进制字节流到JVM内部，然后转换为一个与目标类对应的java.lang.Class对象实例；</p>
-<h4 id="英文名字：ClassLoader"><a href="#英文名字：ClassLoader" class="headerlink" title="英文名字：ClassLoader"></a>英文名字：ClassLoader</h4><p>1、ClassLoader除了将Class加载到JVM之外，还有一个重要的作用就是审查每个类应该有谁加载，它是一种父优先的等级加载机制；<br>2、ClassLoader还有一个重要的作用就是将Class字节码重新解析成JVM统一要求的对象格式；</p>
-<h4 id="主要方法"><a href="#主要方法" class="headerlink" title="主要方法"></a>主要方法</h4><p>1、defineClass();<br>&emsp;&emsp;defineClass方法 的主要作用是将byte 字节流解析成JVM能够识别的class对象，这个方法意味着 我们不仅仅可以通过class文件去实例化对象，还可以其他方式实例化对象，例如我们通过网络接收到一个类的字节码；defineClass的代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">protected final Class&lt;?&gt; defineClass(String name, byte[] b, int off, int len,</div><div class="line">                                        ProtectionDomain protectionDomain)</div><div class="line">       throws ClassFormatError</div><div class="line">   &#123;</div><div class="line">       protectionDomain = preDefineClass(name, protectionDomain);</div><div class="line">       String source = defineClassSourceLocation(protectionDomain);</div><div class="line">       Class&lt;?&gt; c = defineClass1(name, b, off, len, protectionDomain, source);</div><div class="line">       postDefineClass(c, protectionDomain);</div><div class="line">       return c;</div><div class="line">   &#125;</div><div class="line"></div><div class="line"></div><div class="line">   protected final Class&lt;?&gt; defineClass(String name, java.nio.ByteBuffer b,</div><div class="line">                                        ProtectionDomain protectionDomain)</div><div class="line">       throws ClassFormatError</div><div class="line">   &#123;</div><div class="line">       int len = b.remaining();</div><div class="line"></div><div class="line">       // Use byte[] if not a direct ByteBufer:</div><div class="line">       if (!b.isDirect()) &#123;</div><div class="line">           if (b.hasArray()) &#123;</div><div class="line">               return defineClass(name, b.array(),</div><div class="line">                                  b.position() + b.arrayOffset(), len,</div><div class="line">                                  protectionDomain);</div><div class="line">           &#125; else &#123;</div><div class="line">               // no array, or read-only array</div><div class="line">               byte[] tb = new byte[len];</div><div class="line">               b.get(tb);  // get bytes out of byte buffer.</div><div class="line">               return defineClass(name, tb, 0, len, protectionDomain);</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       protectionDomain = preDefineClass(name, protectionDomain);</div><div class="line">       String source = defineClassSourceLocation(protectionDomain);</div><div class="line">       Class&lt;?&gt; c = defineClass2(name, b, b.position(), len, protectionDomain, source);</div><div class="line">       postDefineClass(c, protectionDomain);</div><div class="line">       return c;</div><div class="line">   &#125;</div></pre></td></tr></table></figure></p>
-<p>2、findClass();<br>&emsp;&emsp;实现类的加载规则，取得要加载类的字节码，通常是和defineClass()一起使用的；查找类，返回java.lang.Class类的实例；<br>3、loadClass();<br>&emsp;&emsp;加载类，返回java.lang.Class类的实例；<br>4、resolveClass();<br>&emsp;&emsp;连接指定的一个类，如果你想在类被加载到JVM中的时候就被链接（Link），则调用resolveClass()方法；</p>
-<h3 id="Class文件的加载过程"><a href="#Class文件的加载过程" class="headerlink" title="Class文件的加载过程"></a>Class文件的加载过程</h3><p>&emsp;&emsp;我们都知道类的加载过程有，加载、链接、初始化、卸载；而链接过程又分为验证、准备、解析阶段；那么我们整天挂在嘴边的东西，实质上又是调用了什么方法了呢，下面先看一个图：<br><img src="/images/java/001/01.png" alt=""><br>1、找到.class文件并把这个文件包含的字节码加载到内存中；<br>2、字节码验证、Class类数据结构分析及相应的内存分配和最后符号表的链接；<br>3、类中静态属性和初始化赋值，以及静态块的执行；</p>
-<h4 id="步骤分析"><a href="#步骤分析" class="headerlink" title="步骤分析"></a>步骤分析</h4><h5 id="加载"><a href="#加载" class="headerlink" title="加载"></a>加载</h5><p>&emsp;&emsp;调用findClass()方法找到对应的字节码文件；</p>
-<h5 id="验证："><a href="#验证：" class="headerlink" title="验证："></a>验证：</h5><p>&emsp;&emsp;验证阶段JVM所执行的一系列验证大概分为：格式验证、语义验证、操作验证、符号引用验证；<br>1、格式验证的主要任务就是检查当前正在加载的字节码文件是否符合JVM规范 ，是否是一个有效的字节码文件，格式验证的主要任务是检查当前正在加载的字节码文件中的前四个字节是否是0xCAFEBABE；<br>2、语义验证：验证字节码信息是否符合java语法规范；<br>3、操作验证：JVM会对类型的方法执行验证，以确保一个类的方法在执行时，不会对JVM产生不良影响不会因此导致JVM的进程出现崩溃；<br>4、符号引用验证：对常量池中的各种符号引用执行验证；</p>
-<h5 id="准备阶段："><a href="#准备阶段：" class="headerlink" title="准备阶段："></a>准备阶段：</h5><p>&emsp;&emsp;对存放在方法区 中类数据信息的类变量执行初始化，这里所执行的初始化操作并非是指类加载阶段中的初始化操作，这里仅仅是为类中的所有静态变量分配内存空间，并为其设置一个初始值，而非用户手动执行赋值操作；</p>
-<h5 id="解析阶段："><a href="#解析阶段：" class="headerlink" title="解析阶段："></a>解析阶段：</h5><p>&emsp;&emsp;主要任务是将字节码常量池中的符号引用全部转换为直接引用，包括类、接口、方法和字段的符号引用。</p>
-<h5 id="初始化："><a href="#初始化：" class="headerlink" title="初始化："></a>初始化：</h5><p>&emsp;&emsp;在这个阶段中，JVM会将一个类中所有被static关键字标示的代码统统执行一遍，如果执行的是静态常量，那么用户将会使用用户指定的值覆盖掉之前在准备阶段中JVM为其设置的初始值，如果程序中并没有为静态变量显式指定赋值操作，那么所持有的值仍然是之前的初始值；反之如果执行的是static代码块，那么在初始化阶段中，JVM就将会执行static代码块中定义的所有操作；</p>
-<h3 id="下集预告"><a href="#下集预告" class="headerlink" title="下集预告"></a>下集预告</h3><p>接下来的文章中会手写一个简单的类加载器进行进一步的讲解。</p>
+        <h3 id="初知Dubbo"><a href="#初知Dubbo" class="headerlink" title="初知Dubbo"></a>初知Dubbo</h3><p>&emsp;&emsp;前一段时间，在一次模拟面试中，一个学长告诉我，现在的大学生还是懂一点分布式是比较好的，例如阿里巴巴的Dubbo框架，现在做项目很多公司都会使用这个框架；于是我心心念念这个框架在期末复习的空档时间看了好几次官方文档，都没有太大的作用，今天发了个狠心，决定动手试一下，就像我以前学习SSM框架是一样的，什么都不会，直接上手，所以在下文中，可能涉及到原理讲解的会比较少，很多都是做法是怎样的。<br><a id="more"></a></p>
+<h3 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h3><p>1、安装zookeeper(百度百科)：<br>&emsp;&emsp;ZooKeeper是一个分布式的，开放源码的分布式应用程序协调服务，是Google的Chubby一个开源的实现，是Hadoop和Hbase的重要组件。它是一个为分布式应用提供一致性服务的软件，提供的功能包括：配置维护、域名服务、分布式同步、组服务等。<br>&emsp;&emsp;ZooKeeper的目标就是封装好复杂易出错的关键服务，将简单易用的接口和性能高效、功能稳定的系统提供给用户。<br>&emsp;&emsp;ZooKeeper包含一个简单的原语集，[1]  提供Java和C的接口。<br>&emsp;&emsp;ZooKeeper代码版本中，提供了分布式独享锁、选举、队列的接口，代码在zookeeper-3.4.3\src\recipes。其中分布锁和队列有Java和C两个版本，选举只有Java版本。<br>&emsp;&emsp;我们下载过后把我们的Zookeeper 解压到相应的目录中，进入我们的conf文件夹下，打开 zoo.cfg配置文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"># The number of milliseconds of each tick</div><div class="line"># zookeeper中使用的基本时间单位, 毫秒值.</div><div class="line">tickTime=2000</div><div class="line"># The number of ticks that the initial </div><div class="line"># synchronization phase can take</div><div class="line">initLimit=10</div><div class="line"># The number of ticks that can pass between </div><div class="line"># sending a request and getting an acknowledgement</div><div class="line">syncLimit=5</div><div class="line"># the directory where the snapshot is stored.</div><div class="line"># do not use /tmp for storage, /tmp here is just </div><div class="line"># example sakes.</div><div class="line"># 数据目录. 可以是任意目录.</div><div class="line">dataDir=D:\Program Files\zookeeper-3.4.6\dataTmp</div><div class="line"># the port at which the clients will connect</div><div class="line"># 监听client连接的端口号.</div><div class="line">clientPort=2181</div><div class="line"># the maximum number of client connections.</div><div class="line"># increase this if you need to handle more clients</div><div class="line">#maxClientCnxns=60</div><div class="line">#</div><div class="line"># Be sure to read the maintenance section of the </div><div class="line"># administrator guide before turning on autopurge.</div><div class="line">#</div><div class="line"># http://zookeeper.apache.org/doc/current/zookeeperAdmin.html#sc_maintenance</div><div class="line">#</div><div class="line"># The number of snapshots to retain in dataDir</div><div class="line">#autopurge.snapRetainCount=3</div><div class="line"># Purge task interval in hours</div><div class="line"># Set to &quot;0&quot; to disable auto purge feature</div><div class="line">#autopurge.purgeInterval=1</div></pre></td></tr></table></figure></p>
+<p>2、安装Tomcat（相信大家都有）；<br>3、打包dubbo-admin的war包；<br>&emsp;&emsp;我自己用的IDE是Idea，要是也用这个IED就跟着我的脚步，把dubbo-admin解压到自己喜欢的地方，在idea中直接打开就行，我们设置好后，直接启动Tomcat服务器即可，我们 可以看到登录页面，登陆过后会看到如下我的页面：<br><img src="/images/dubbo/001/01.png" alt=""><br>我们的登录的用户名密码为：dubbo-admin/src/webapp/WEB-INF/dubbo-properties配置文件中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># 这里的端口号与上面Zookeeper中配置的端口号一致</div><div class="line">dubbo.registry.address=zookeeper://localhost:2181</div><div class="line">dubbo.admin.root.password=root</div><div class="line">dubbo.admin.guest.password=guest</div></pre></td></tr></table></figure>
+<p>上述的工具和本次的测试代码我都放在了一起，可一并下载，地址为：<a href="https://github.com/TerryTaoyp/dubbo-demo" target="_blank" rel="external">下载地址</a></p>
+<h3 id="开始工作"><a href="#开始工作" class="headerlink" title="开始工作"></a>开始工作</h3><p>&emsp;&emsp;我这里主要讲一下需要注意的点，全部代码在上面那个下载地址中有，我就不再讲其他没用的了；<br>配置文件application-consumers.xml:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</div><div class="line">&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;</div><div class="line">       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</div><div class="line">       xmlns:dubbo=&quot;http://code.alibabatech.com/schema/dubbo&quot;</div><div class="line">       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans</div><div class="line">       http://www.springframework.org/schema/beans/spring-beans.xsd</div><div class="line">       http://code.alibabatech.com/schema/dubbo</div><div class="line">       http://code.alibabatech.com/schema/dubbo/dubbo.xsd&quot;&gt;</div><div class="line"></div><div class="line">    &lt;!-- 配置可参考 http://dubbo.io/User+Guide-zh.htm --&gt;</div><div class="line"></div><div class="line">    &lt;!-- 消费方应用名，用于计算依赖关系，不是匹配条件，不要与提供方一样 --&gt;</div><div class="line">    &lt;dubbo:application  name=&quot;dubbo-consumer&quot; owner=&quot;dubbo-consumer&quot;/&gt;</div><div class="line">    &lt;!-- 定义 zookeeper 注册中心地址及协议,这里的端口号与上面对应  --&gt;</div><div class="line">    &lt;dubbo:registry address=&quot;zookeeper://127.0.0.1:2181&quot; client=&quot;zkclient&quot; /&gt;</div><div class="line">    &lt;!-- 和本地bean一样实现服务 --&gt;</div><div class="line">    &lt;bean id=&quot;demoService&quot; class=&quot;com.tao.dubbo.service.impl.TestServiceImpl&quot; /&gt;</div><div class="line"></div><div class="line">    &lt;!-- 向注册中心注册暴漏服务地址,注册服务 --&gt;</div><div class="line">    &lt;dubbo:service interface=&quot;com.tao.dubbo.service.TestService&quot;</div><div class="line">                   ref=&quot;demoService&quot; executes=&quot;10&quot; /&gt;</div><div class="line">&lt;/beans&gt;</div></pre></td></tr></table></figure></p>
+<p>配置我们访问前端页面的端口号application.properties:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">server.port=8088</div></pre></td></tr></table></figure></p>
+<p>主方法，DubboConsumerAppplication.class:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">package com.tao.dubbo.consumer;</div><div class="line"></div><div class="line">import org.springframework.boot.SpringApplication;</div><div class="line">import org.springframework.boot.autoconfigure.SpringBootApplication;</div><div class="line">import org.springframework.context.annotation.ImportResource;</div><div class="line"></div><div class="line">@SpringBootApplication</div><div class="line">@ImportResource(value = &#123;&quot;classpath:application-consumers.xml&quot;&#125;) // 使用 consumers.xml 配置；</div><div class="line">public class DubboConsumerApplication &#123;</div><div class="line">    public static void main(String[] args) &#123;</div><div class="line">        SpringApplication.run(DubboConsumerApplication.class, args);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>service接口及其实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">package com.tao.dubbo.service;</div><div class="line"></div><div class="line">/**</div><div class="line"> * 测试远程调用的接口；</div><div class="line"> */</div><div class="line">public interface TestService &#123;</div><div class="line">    String sayHello(String name);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">package com.tao.dubbo.service.impl;</div><div class="line"></div><div class="line">import com.tao.dubbo.service.TestService;</div><div class="line"></div><div class="line">/**</div><div class="line"> * Created by Taoyongpan on 2017/12/25.</div><div class="line"> */</div><div class="line">public class TestServiceImpl implements TestService &#123;</div><div class="line">    @Override</div><div class="line">    public String sayHello(String name) &#123;</div><div class="line">        return name;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>controller方法 ：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">package com.tao.dubbo.consumer.controller;</div><div class="line"></div><div class="line">import com.alibaba.fastjson.JSONObject;</div><div class="line">import com.tao.dubbo.service.TestService;</div><div class="line">import org.springframework.beans.factory.annotation.Autowired;</div><div class="line">import org.springframework.stereotype.Controller;</div><div class="line">import org.springframework.web.bind.annotation.PathVariable;</div><div class="line">import org.springframework.web.bind.annotation.RequestMapping;</div><div class="line">import org.springframework.web.bind.annotation.ResponseBody;</div><div class="line"></div><div class="line">/**</div><div class="line"> * 测试用的 Controller 类；</div><div class="line"> */</div><div class="line">@Controller</div><div class="line">public class TestController &#123;</div><div class="line"></div><div class="line">    @Autowired</div><div class="line">    TestService testService;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 测试 JSON 接口；</div><div class="line">     *</div><div class="line">     * @param name 名字；</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    @ResponseBody</div><div class="line">    @RequestMapping(&quot;/test/&#123;name&#125;&quot;)</div><div class="line">    public JSONObject testJson(@PathVariable(&quot;name&quot;) String name) &#123;</div><div class="line">        JSONObject jsonObject = new JSONObject();</div><div class="line">        String testStr = testService.sayHello(name);</div><div class="line">        jsonObject.put(&quot;str&quot;, testStr);</div><div class="line">        return jsonObject;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="调试运行"><a href="#调试运行" class="headerlink" title="调试运行"></a>调试运行</h3><p>&emsp;&emsp;我们的运行顺序是，先打开Zookeeper（bin/zkServer.cmd）,然后在tomcat中运行我们上面下载的dubbo-admin，然后就是运行我们上面的dubbo-consumer中的主方法，在地址栏中输入：localhost:8088/test/taoyongpan<br>若页面正常输出，则表示搭建成功；</p>
+<h3 id="下篇预告"><a href="#下篇预告" class="headerlink" title="下篇预告"></a>下篇预告</h3><p>&emsp;&emsp;dubbo专题的下一篇会讲一下分布式的产生过程</p>
 
       
     </div>
@@ -493,7 +494,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/java基础/" rel="tag"># java基础</a>
+            <a href="/tags/分布式/" rel="tag"># 分布式</a>
           
         </div>
       
@@ -506,8 +507,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/12/03/一个HelloWorld引发的思考/" rel="next" title="HelloWorld引发的思考">
-                <i class="fa fa-chevron-left"></i> HelloWorld引发的思考
+              <a href="/2017/12/08/sql002/" rel="next" title="Mysql索引实现原理">
+                <i class="fa fa-chevron-left"></i> Mysql索引实现原理
               </a>
             
           </div>
@@ -515,10 +516,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/12/05/java002/" rel="prev" title="绑架JVM">
-                绑架JVM <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -703,7 +700,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是类加载"><span class="nav-number">1.</span> <span class="nav-text">什么是类加载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类加载器"><span class="nav-number">2.</span> <span class="nav-text">类加载器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#官方解释："><span class="nav-number">2.1.</span> <span class="nav-text">官方解释：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#英文名字：ClassLoader"><span class="nav-number">2.2.</span> <span class="nav-text">英文名字：ClassLoader</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#主要方法"><span class="nav-number">2.3.</span> <span class="nav-text">主要方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Class文件的加载过程"><span class="nav-number">3.</span> <span class="nav-text">Class文件的加载过程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#步骤分析"><span class="nav-number">3.1.</span> <span class="nav-text">步骤分析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#加载"><span class="nav-number">3.1.1.</span> <span class="nav-text">加载</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#验证："><span class="nav-number">3.1.2.</span> <span class="nav-text">验证：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#准备阶段："><span class="nav-number">3.1.3.</span> <span class="nav-text">准备阶段：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#解析阶段："><span class="nav-number">3.1.4.</span> <span class="nav-text">解析阶段：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#初始化："><span class="nav-number">3.1.5.</span> <span class="nav-text">初始化：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#下集预告"><span class="nav-number">4.</span> <span class="nav-text">下集预告</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#初知Dubbo"><span class="nav-number">1.</span> <span class="nav-text">初知Dubbo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#前期准备"><span class="nav-number">2.</span> <span class="nav-text">前期准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开始工作"><span class="nav-number">3.</span> <span class="nav-text">开始工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#调试运行"><span class="nav-number">4.</span> <span class="nav-text">调试运行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#下篇预告"><span class="nav-number">5.</span> <span class="nav-text">下篇预告</span></a></li></ol></div>
             
 
           </div>

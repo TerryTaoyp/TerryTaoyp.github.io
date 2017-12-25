@@ -78,7 +78,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="java基础," />
+  <meta name="keywords" content="Hexo, NexT" />
 
 
 
@@ -96,20 +96,13 @@
 
 
 
-<meta name="description" content="什么是类加载&amp;emsp;&amp;emsp;前面我们说道java外交部长（编译器）就是做到了把java国王交代的任务分给自己的小弟（JVM），那么他交代给小弟JVM的过程其实上就是我的类加载过程；既然有这个交代的过程那肯定就有一个传话的人（公公），要不然JVM怎么知道老大的交代的任务呢，我们一般把这个人叫做类加载器，他负责把外交部长的编译产物（字节码文件）送到JVM的家中。">
-<meta name="keywords" content="java基础">
-<meta property="og:type" content="article">
-<meta property="og:title" content="畅谈类加载的过程">
-<meta property="og:url" content="http://yoursite.com/2017/12/04/java001/index.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="陶永攀博客">
+<meta property="og:url" content="http://yoursite.com/categories/分布式/index.html">
 <meta property="og:site_name" content="陶永攀博客">
-<meta property="og:description" content="什么是类加载&amp;emsp;&amp;emsp;前面我们说道java外交部长（编译器）就是做到了把java国王交代的任务分给自己的小弟（JVM），那么他交代给小弟JVM的过程其实上就是我的类加载过程；既然有这个交代的过程那肯定就有一个传话的人（公公），要不然JVM怎么知道老大的交代的任务呢，我们一般把这个人叫做类加载器，他负责把外交部长的编译产物（字节码文件）送到JVM的家中。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://yoursite.com/images/java/001/01.png">
-<meta property="og:updated_time" content="2017-12-13T13:06:48.160Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="畅谈类加载的过程">
-<meta name="twitter:description" content="什么是类加载&amp;emsp;&amp;emsp;前面我们说道java外交部长（编译器）就是做到了把java国王交代的任务分给自己的小弟（JVM），那么他交代给小弟JVM的过程其实上就是我的类加载过程；既然有这个交代的过程那肯定就有一个传话的人（公公），要不然JVM怎么知道老大的交代的任务呢，我们一般把这个人叫做类加载器，他负责把外交部长的编译产物（字节码文件）送到JVM的家中。">
-<meta name="twitter:image" content="http://yoursite.com/images/java/001/01.png">
+<meta name="twitter:title" content="陶永攀博客">
 
 
 
@@ -138,13 +131,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/12/04/java001/"/>
+  <link rel="canonical" href="http://yoursite.com/categories/分布式/"/>
 
 
 
 
 
-  <title>畅谈类加载的过程 | 陶永攀博客</title>
+  <title>分类: 分布式 | 陶永攀博客</title>
   
 
 
@@ -173,7 +166,7 @@
     
   
 
-  <div class="container sidebar-position-left page-post-detail ">
+  <div class="container sidebar-position-left  ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -310,235 +303,55 @@
           <div id="content" class="content">
             
 
-  <div id="posts" class="posts-expand">
-    
+  
+  
+  
+  <div class="post-block category">
 
-  
+    <div id="posts" class="posts-collapse">
+      <div class="collection-title">
+        <h1>分布式<small>分类</small>
+        </h1>
+      </div>
 
-  
-  
-  
+      
+        
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/04/java001/">
+    <header class="post-header">
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Taoyongpan">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="陶永攀博客">
-    </span>
-
-    
-      <header class="post-header">
-
+      <h2 class="post-title">
         
+            <a class="post-title-link" href="/2017/12/25/dubbo001/" itemprop="url">
+              
+                <span itemprop="name">Dubbo的简单小demo</span>
+              
+            </a>
         
-          <h1 class="post-title" itemprop="name headline">畅谈类加载的过程</h1>
-        
+      </h2>
 
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-04T00:00:00+08:00">
-                2017-12-04
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/2017/12/04/java001/#SOHUCS" itemprop="discussionUrl">
-                  <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2017/12/04/java001/" itemprop="commentsCount"></span>
-                </a>
-              
-            
-          
-
-          
-          
-             <span id="/2017/12/04/java001/" class="leancloud_visitors" data-flag-title="畅谈类加载的过程">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-          
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        <h3 id="什么是类加载"><a href="#什么是类加载" class="headerlink" title="什么是类加载"></a>什么是类加载</h3><p>&emsp;&emsp;前面我们说道java外交部长（编译器）就是做到了把java国王交代的任务分给自己的小弟（JVM），那么他交代给小弟JVM的过程其实上就是我的类加载过程；既然有这个交代的过程那肯定就有一个传话的人（公公），要不然JVM怎么知道老大的交代的任务呢，我们一般把这个人叫做类加载器，他负责把外交部长的编译产物（字节码文件）送到JVM的家中。<br><a id="more"></a></p>
-<h3 id="类加载器"><a href="#类加载器" class="headerlink" title="类加载器"></a>类加载器</h3><h4 id="官方解释："><a href="#官方解释：" class="headerlink" title="官方解释："></a>官方解释：</h4><p>&emsp;&emsp;类加载器是JVM执行类加载机制的前提，其主要任务为根据一个类的全限定名来读取此类的二进制字节流到JVM内部，然后转换为一个与目标类对应的java.lang.Class对象实例；</p>
-<h4 id="英文名字：ClassLoader"><a href="#英文名字：ClassLoader" class="headerlink" title="英文名字：ClassLoader"></a>英文名字：ClassLoader</h4><p>1、ClassLoader除了将Class加载到JVM之外，还有一个重要的作用就是审查每个类应该有谁加载，它是一种父优先的等级加载机制；<br>2、ClassLoader还有一个重要的作用就是将Class字节码重新解析成JVM统一要求的对象格式；</p>
-<h4 id="主要方法"><a href="#主要方法" class="headerlink" title="主要方法"></a>主要方法</h4><p>1、defineClass();<br>&emsp;&emsp;defineClass方法 的主要作用是将byte 字节流解析成JVM能够识别的class对象，这个方法意味着 我们不仅仅可以通过class文件去实例化对象，还可以其他方式实例化对象，例如我们通过网络接收到一个类的字节码；defineClass的代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">protected final Class&lt;?&gt; defineClass(String name, byte[] b, int off, int len,</div><div class="line">                                        ProtectionDomain protectionDomain)</div><div class="line">       throws ClassFormatError</div><div class="line">   &#123;</div><div class="line">       protectionDomain = preDefineClass(name, protectionDomain);</div><div class="line">       String source = defineClassSourceLocation(protectionDomain);</div><div class="line">       Class&lt;?&gt; c = defineClass1(name, b, off, len, protectionDomain, source);</div><div class="line">       postDefineClass(c, protectionDomain);</div><div class="line">       return c;</div><div class="line">   &#125;</div><div class="line"></div><div class="line"></div><div class="line">   protected final Class&lt;?&gt; defineClass(String name, java.nio.ByteBuffer b,</div><div class="line">                                        ProtectionDomain protectionDomain)</div><div class="line">       throws ClassFormatError</div><div class="line">   &#123;</div><div class="line">       int len = b.remaining();</div><div class="line"></div><div class="line">       // Use byte[] if not a direct ByteBufer:</div><div class="line">       if (!b.isDirect()) &#123;</div><div class="line">           if (b.hasArray()) &#123;</div><div class="line">               return defineClass(name, b.array(),</div><div class="line">                                  b.position() + b.arrayOffset(), len,</div><div class="line">                                  protectionDomain);</div><div class="line">           &#125; else &#123;</div><div class="line">               // no array, or read-only array</div><div class="line">               byte[] tb = new byte[len];</div><div class="line">               b.get(tb);  // get bytes out of byte buffer.</div><div class="line">               return defineClass(name, tb, 0, len, protectionDomain);</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       protectionDomain = preDefineClass(name, protectionDomain);</div><div class="line">       String source = defineClassSourceLocation(protectionDomain);</div><div class="line">       Class&lt;?&gt; c = defineClass2(name, b, b.position(), len, protectionDomain, source);</div><div class="line">       postDefineClass(c, protectionDomain);</div><div class="line">       return c;</div><div class="line">   &#125;</div></pre></td></tr></table></figure></p>
-<p>2、findClass();<br>&emsp;&emsp;实现类的加载规则，取得要加载类的字节码，通常是和defineClass()一起使用的；查找类，返回java.lang.Class类的实例；<br>3、loadClass();<br>&emsp;&emsp;加载类，返回java.lang.Class类的实例；<br>4、resolveClass();<br>&emsp;&emsp;连接指定的一个类，如果你想在类被加载到JVM中的时候就被链接（Link），则调用resolveClass()方法；</p>
-<h3 id="Class文件的加载过程"><a href="#Class文件的加载过程" class="headerlink" title="Class文件的加载过程"></a>Class文件的加载过程</h3><p>&emsp;&emsp;我们都知道类的加载过程有，加载、链接、初始化、卸载；而链接过程又分为验证、准备、解析阶段；那么我们整天挂在嘴边的东西，实质上又是调用了什么方法了呢，下面先看一个图：<br><img src="/images/java/001/01.png" alt=""><br>1、找到.class文件并把这个文件包含的字节码加载到内存中；<br>2、字节码验证、Class类数据结构分析及相应的内存分配和最后符号表的链接；<br>3、类中静态属性和初始化赋值，以及静态块的执行；</p>
-<h4 id="步骤分析"><a href="#步骤分析" class="headerlink" title="步骤分析"></a>步骤分析</h4><h5 id="加载"><a href="#加载" class="headerlink" title="加载"></a>加载</h5><p>&emsp;&emsp;调用findClass()方法找到对应的字节码文件；</p>
-<h5 id="验证："><a href="#验证：" class="headerlink" title="验证："></a>验证：</h5><p>&emsp;&emsp;验证阶段JVM所执行的一系列验证大概分为：格式验证、语义验证、操作验证、符号引用验证；<br>1、格式验证的主要任务就是检查当前正在加载的字节码文件是否符合JVM规范 ，是否是一个有效的字节码文件，格式验证的主要任务是检查当前正在加载的字节码文件中的前四个字节是否是0xCAFEBABE；<br>2、语义验证：验证字节码信息是否符合java语法规范；<br>3、操作验证：JVM会对类型的方法执行验证，以确保一个类的方法在执行时，不会对JVM产生不良影响不会因此导致JVM的进程出现崩溃；<br>4、符号引用验证：对常量池中的各种符号引用执行验证；</p>
-<h5 id="准备阶段："><a href="#准备阶段：" class="headerlink" title="准备阶段："></a>准备阶段：</h5><p>&emsp;&emsp;对存放在方法区 中类数据信息的类变量执行初始化，这里所执行的初始化操作并非是指类加载阶段中的初始化操作，这里仅仅是为类中的所有静态变量分配内存空间，并为其设置一个初始值，而非用户手动执行赋值操作；</p>
-<h5 id="解析阶段："><a href="#解析阶段：" class="headerlink" title="解析阶段："></a>解析阶段：</h5><p>&emsp;&emsp;主要任务是将字节码常量池中的符号引用全部转换为直接引用，包括类、接口、方法和字段的符号引用。</p>
-<h5 id="初始化："><a href="#初始化：" class="headerlink" title="初始化："></a>初始化：</h5><p>&emsp;&emsp;在这个阶段中，JVM会将一个类中所有被static关键字标示的代码统统执行一遍，如果执行的是静态常量，那么用户将会使用用户指定的值覆盖掉之前在准备阶段中JVM为其设置的初始值，如果程序中并没有为静态变量显式指定赋值操作，那么所持有的值仍然是之前的初始值；反之如果执行的是static代码块，那么在初始化阶段中，JVM就将会执行static代码块中定义的所有操作；</p>
-<h3 id="下集预告"><a href="#下集预告" class="headerlink" title="下集预告"></a>下集预告</h3><p>接下来的文章中会手写一个简单的类加载器进行进一步的讲解。</p>
-
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-      <div>
-        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
-  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
-  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
-    <span>Donate</span>
-  </button>
-  <div id="QR" style="display: none;">
-
-    
-      <div id="wechat" style="display: inline-block">
-        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="Taoyongpan WeChat Pay"/>
-        <p>WeChat Pay</p>
+      <div class="post-meta">
+        <time class="post-time" itemprop="dateCreated"
+              datetime="2017-12-25T00:00:00+08:00"
+              content="2017-12-25" >
+          12-25
+        </time>
       </div>
-    
 
-    
-      <div id="alipay" style="display: inline-block">
-        <img id="alipay_qr" src="/images/alipay.jpg" alt="Taoyongpan Alipay"/>
-        <p>Alipay</p>
-      </div>
-    
-
-    
-
-  </div>
-</div>
-
-      </div>
-    
-
-    
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/java基础/" rel="tag"># java基础</a>
-          
-        </div>
-      
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2017/12/03/一个HelloWorld引发的思考/" rel="next" title="HelloWorld引发的思考">
-                <i class="fa fa-chevron-left"></i> HelloWorld引发的思考
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/12/05/java002/" rel="prev" title="绑架JVM">
-                绑架JVM <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
-  </div>
-  
-  
-  
+    </header>
   </article>
 
 
-
-    <div class="post-spread">
       
     </div>
+
   </div>
+  
+  
+  
+
+  
+
 
 
           </div>
@@ -546,12 +359,6 @@
 
 
           
-  <div class="comments" id="comments">
-    
-      <div id="SOHUCS"></div>
-    
-  </div>
-
 
         </div>
         
@@ -572,17 +379,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview sidebar-panel">
+      <section class="site-overview sidebar-panel sidebar-panel-active">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.gif"
@@ -693,22 +491,6 @@
 
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是类加载"><span class="nav-number">1.</span> <span class="nav-text">什么是类加载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类加载器"><span class="nav-number">2.</span> <span class="nav-text">类加载器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#官方解释："><span class="nav-number">2.1.</span> <span class="nav-text">官方解释：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#英文名字：ClassLoader"><span class="nav-number">2.2.</span> <span class="nav-text">英文名字：ClassLoader</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#主要方法"><span class="nav-number">2.3.</span> <span class="nav-text">主要方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Class文件的加载过程"><span class="nav-number">3.</span> <span class="nav-text">Class文件的加载过程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#步骤分析"><span class="nav-number">3.1.</span> <span class="nav-text">步骤分析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#加载"><span class="nav-number">3.1.1.</span> <span class="nav-text">加载</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#验证："><span class="nav-number">3.1.2.</span> <span class="nav-text">验证：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#准备阶段："><span class="nav-number">3.1.3.</span> <span class="nav-text">准备阶段：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#解析阶段："><span class="nav-number">3.1.4.</span> <span class="nav-text">解析阶段：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#初始化："><span class="nav-number">3.1.5.</span> <span class="nav-text">初始化：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#下集预告"><span class="nav-number">4.</span> <span class="nav-text">下集预告</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
@@ -839,10 +621,10 @@
 
 
   
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+    <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
 <script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
 
-
+  
 
   
 
